@@ -15,6 +15,8 @@ public class GameSceneMultiplayer extends Scene {
 
   private final float MAX_RHYTHM_TIME = 33;
   private float rhythmTimeLeft = MAX_RHYTHM_TIME;
+  
+  private int startingColorIndex = 0;
 
   private int[][] world = {
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
@@ -37,22 +39,6 @@ public class GameSceneMultiplayer extends Scene {
       if (rhythmTimeLeft <= 0) {
         rhythmTimeLeft = MAX_RHYTHM_TIME;
         isMiniGame = false;
-        //for (int i = 0; i < miniGame.good1; ++i) {
-        //  addPlayer1Creep(false);
-        //}
-
-        //for (int i = 0; i < miniGame.perfect1; ++i) {
-        //  addPlayer1Creep(false);
-        //}
-
-        //for (int i = 0; i < miniGame.good2; ++i) {
-        //  addPlayer2Creep(false);
-        //}
-
-        //for (int i = 0; i < miniGame.perfect2; ++i) {
-        //  addPlayer2Creep(true);
-        //}
-        // start spawning minions based on data
       } else rhythmTimeLeft -= Time.deltaTime;
     } else {
       mapUpdate();
@@ -77,9 +63,9 @@ public class GameSceneMultiplayer extends Scene {
             player2.creeps.remove(i);
         }
 
-        //if (player1.creeps.isEmpty() && player2.creeps.isEmpty()) {
-        //  isBuildingState = true;
-        //}
+        if (player1.creeps.isEmpty() && player2.creeps.isEmpty()) {
+          isBuildingState = true;
+        }
       }
     }
 
@@ -91,15 +77,38 @@ public class GameSceneMultiplayer extends Scene {
   public void onSceneEnter() {
     for (int i = 0; i < worldRows; ++i)
     {
-      for (int j = 0; j < worldCols; ++j) {
-        if ((i >= 3 && i <= 6) && (j == 0 || j == 19)) {
-          world[i][j] = 4;
-        } else {
-          world[i][j] = floor(random(0, 4));
-        }
-      }
+      //for (int j = 0; j < worldCols; ++j) {
+      //  if ((i >= 3 && i <= 6) && (j == 0 || j == 19)) {
+      //    world[i][j] = 4;
+      //  } else {
+      //    world[i][j] = floor(random(0, 4));
+      //  }
+      //}
     }
+      
+    setDanceFloor();
     isBuildingState = true;
+  }
+  
+  public void setDanceFloor() {
+    int index = startingColorIndex;
+    for(int i = 0; i < worldRows; ++i) {
+      for(int j = i, k = 0; j >=0 && k < worldCols; --j, ++k) {
+        if ((j >= 3 && j <= 6) && (k == 0 || k == 19)) {
+          world[j][k] = 5;
+        } else world[j][k] = index;
+      }
+      index = (index + 1) % 5;
+    }
+      
+      for(int i = 1; i < worldCols; ++i) {
+        for(int j = 9, k = i; j >= 0 && k < worldCols; --j, ++k) {
+          if ((j >= 3 && j <= 6) && (k == 0 || k == 19)) {
+            world[j][k] = 5;
+          } else world[j][k] = index;
+        }
+        index = (index + 1) % 5;
+      }
   }
 
   public void onSceneExit() {

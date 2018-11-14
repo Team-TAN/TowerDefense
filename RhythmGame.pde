@@ -46,7 +46,7 @@ class RhythmGame {
     dummy = minim.loadFile("song.mp3", 2048);
     beat = new BeatDetect(dummy.bufferSize(), dummy.sampleRate());
     beat.setSensitivity(1000);
-    b1 =new BeatListener(beat, dummy);
+    b1 = new BeatListener(beat, dummy);
   
     dummy.play();
     dummy.setGain(-80);
@@ -226,7 +226,7 @@ class RhythmGame {
     //player2
     /////////////////////////////////////////
   
-    if ( keyCode == 36) {
+    if ( keyCode == 36 || key == '7') {
       for (int i = 0; i <= notes.size() - 1; i++) {
         Note n = notes.get(i);
         //if ( n.x == 600 && n.y >=400) {

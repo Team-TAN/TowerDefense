@@ -9,6 +9,8 @@ public class Creep {
   
   public float timeToLeave = 0;
   
+  int i = 0;
+  
   public Creep(boolean isPowered) {
     this.isPowered = isPowered;
     if(isPowered) {
@@ -22,8 +24,10 @@ public class Creep {
     fill(10);
     timeUpdate();
     println("in update");
-    int size = (isPowered ? 25 : 15);
-    ellipse(pos.x, pos.y, size, size);    
+    int size = (isPowered ? 20 : 15);
+    ellipse(pos.x, pos.y, size, size); 
+    
+    if(i++ > 1000) isDead = true;
   }
   
   public void timeUpdate() {
@@ -33,4 +37,11 @@ public class Creep {
       pos.x += 20 * Time.deltaTime;
     }
   }
+}
+
+private class PathTile {
+  public float f;
+  public float g;
+  
+  public float neighbors;
 }

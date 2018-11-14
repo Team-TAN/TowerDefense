@@ -25,10 +25,11 @@ void setup() {
   minim = new Minim(this);
   //colorMode(HSB);
   tiles.put(0, new RedTile());
-  tiles.put(1, new BlueTile());
+  tiles.put(1, new OrangeTile());
   tiles.put(2, new YellowTile());
-  tiles.put(3, new OrangeTile());
-  tiles.put(4, new SpawnTile());
+  tiles.put(3, new BlueTile());
+  tiles.put(4, new GreenTile());
+  tiles.put(5, new SpawnTile());
   scene = new GameSceneMultiplayer();
   scene.onSceneEnter();
 }
