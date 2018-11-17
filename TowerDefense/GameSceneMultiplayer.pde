@@ -13,7 +13,7 @@ public class GameSceneMultiplayer extends Scene {
   private final float MAX_BUILD_TIME = 20;
   private float buildTimeLeft = MAX_BUILD_TIME;
 
-  private final float MAX_RHYTHM_TIME = 33;
+  private final float MAX_RHYTHM_TIME = 13;
   private float rhythmTimeLeft = MAX_RHYTHM_TIME;
   
   private int startingColorIndex = 0;
@@ -21,11 +21,11 @@ public class GameSceneMultiplayer extends Scene {
   private int[][] world = {
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+    {0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
@@ -37,8 +37,7 @@ public class GameSceneMultiplayer extends Scene {
     if (isMiniGame) {
       miniGame.draw();
       if (rhythmTimeLeft <= 0) {
-        rhythmTimeLeft = MAX_RHYTHM_TIME;
-        isMiniGame = false;
+        onMiniGameEnd();
       } else rhythmTimeLeft -= Time.deltaTime;
     } else {
       mapUpdate();
@@ -75,6 +74,7 @@ public class GameSceneMultiplayer extends Scene {
   
 
   public void onSceneEnter() {
+    // start background music
     for (int i = 0; i < worldRows; ++i)
     {
       //for (int j = 0; j < worldCols; ++j) {
@@ -94,21 +94,27 @@ public class GameSceneMultiplayer extends Scene {
     int index = startingColorIndex;
     for(int i = 0; i < worldRows; ++i) {
       for(int j = i, k = 0; j >=0 && k < worldCols; --j, ++k) {
-        if ((j >= 3 && j <= 6) && (k == 0 || k == 19)) {
-          world[j][k] = 5;
-        } else world[j][k] = index;
+        changeTile(i,j,k,index);
       }
       index = (index + 1) % 5;
     }
       
       for(int i = 1; i < worldCols; ++i) {
         for(int j = 9, k = i; j >= 0 && k < worldCols; --j, ++k) {
-          if ((j >= 3 && j <= 6) && (k == 0 || k == 19)) {
-            world[j][k] = 5;
-          } else world[j][k] = index;
+          changeTile(i,j,k,index);
         }
         index = (index + 1) % 5;
       }
+  }
+  
+  public void changeTile(int i, int j, int k, int index) {
+    if(world[j][k] > 5) {
+      tiles.get(world[j][k]).backgroundTile = tiles.get(index);
+    } else {
+      if ((j >= 3 && j <= 6) && (k == 0 || k == 19)) {
+        world[j][k] = 5;
+      } else world[j][k] = index; 
+    }
   }
 
   public void onSceneExit() {
@@ -196,6 +202,43 @@ public class GameSceneMultiplayer extends Scene {
     isBuildingState = false;
     buildTimeLeft = MAX_BUILD_TIME;
     isMiniGame = true;
-    miniGame = new RhythmGame(player1, player2);
+    miniGame = new RhythmGame(player1, player2, 0);
+    //pause background music
+  }
+  
+  public void onMiniGameEnd() {
+    rhythmTimeLeft = MAX_RHYTHM_TIME;
+    miniGame.player.pause();
+    isMiniGame = false;
+    // resume background music
+    
+    //remake map for pathfinder
+    for(int i = 0; i < worldRows; ++i) {
+      for(int j = 0; j < worldCols; ++j) {
+        PathTile pt = new PathTile();
+        Tile t = tiles.get(world[i][j]);
+        
+        pt.cost = t.cost;
+        pt.x = j;
+        pt.y = i;
+        
+        Pathfinder.worldTiles[i][j] = pt;
+      }
+    }
+    
+    for(int i = 0; i < worldRows; ++i) {
+      for(int j = 0; j < worldCols; ++j) {
+        Pathfinder.worldTiles[i][j].setNeighbors();
+      }
+    }
+    
+    // find paths
+    for (int i = 0; i < player1.creeps.size(); ++i) {
+      player1.creeps.get(i).findPath();
+    }
+
+    for (int i = 0; i < player2.creeps.size(); ++i) {
+      player2.creeps.get(i).findPath();
+    }
   }
 }

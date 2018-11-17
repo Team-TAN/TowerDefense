@@ -1,6 +1,6 @@
 class RhythmGame {
   
-  private AudioPlayer player; 
+  public AudioPlayer player; 
   private AudioPlayer dummy;
   private BeatDetect beat;
   private BeatListener b1;
@@ -35,19 +35,19 @@ class RhythmGame {
   
   private int alpha = 200;
   
-  public RhythmGame(Player player1, Player player2) {
+  public RhythmGame(Player player1, Player player2, int songIndex) {
     
     this.player1 = player1;
     this.player2 = player2;
- 
-    //player = minim.loadFile("Dragonforce - Through the Fire and Flames(Lyrics).mp3", 2048);
-    player = minim.loadFile("song.mp3", 2048);
-    //dummy = minim.loadFile("Dragonforce - Through the Fire and Flames(Lyrics).mp3", 2048);
-    dummy = minim.loadFile("song.mp3", 2048);
+    
+    player = minim.loadFile(songs[songIndex]);
+    dummy = minim.loadFile(songs[songIndex]);
+    
     beat = new BeatDetect(dummy.bufferSize(), dummy.sampleRate());
     beat.setSensitivity(1000);
     b1 = new BeatListener(beat, dummy);
   
+    dummy.rewind();
     dummy.play();
     dummy.setGain(-80);
   }
@@ -56,6 +56,7 @@ class RhythmGame {
     background(0);
     //beat.detect(dummy.mix);
     if (dummy.position() >= 3700 && !start) {
+      player.rewind();
       player.play();
       start = true;
     } else if (dummy.position() > 26300) {
@@ -143,6 +144,7 @@ class RhythmGame {
     player1StartTime += .8;
     int rand = floor(random(3, 7));
     c.pos = new PVector(GRID_START_X + tileWidth / 2, GRID_START_Y + ((rand + 0.5) * tileHeight));
+    c.start = new PVector(0, rand);
     c.targetPos = new PVector(19, rand);
     player1.creeps.add(c);
   }
@@ -154,6 +156,7 @@ class RhythmGame {
     player2StartTime += .8;
     int rand = floor(random(3, 7));
     c.pos = new PVector(GRID_START_X + (19.5 * tileWidth), GRID_START_Y + ((rand + 0.5) * tileHeight));
+    c.start = new PVector(19, rand);
     c.targetPos = new PVector(0, rand);
     player2.creeps.add(c);
   }

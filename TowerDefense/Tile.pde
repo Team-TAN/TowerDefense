@@ -1,10 +1,8 @@
 public class Tile {
   
+  public Tile backgroundTile = null;
   protected int colorOfTile = 0;
-  public int cost = 0;
-  
-  public Tile() {
-  }
+  public int cost = 1;
   
   public void update() {
     

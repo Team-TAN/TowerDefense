@@ -4,8 +4,10 @@ public class MainMenu extends Scene {
     return null;
   }
   
-  public void onSceneEnter() {}
-  public void onSceneExit() {}
+  public void onSceneEnter() {//start music
+  }
+  public void onSceneExit() {//end music
+  }
   
   public void onMousePressed() {
   }
