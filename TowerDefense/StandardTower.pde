@@ -4,10 +4,14 @@ class StandardTower extends Tile {
     cost = 1000;
   }
   
-  public void display(PVector pos) {
-    backgroundTile.display(pos);
+  public void display() {
+    backgroundTile.display();
     //display image
     fill(0);
     rect(pos.x + 5, pos.y + 5, 20, 20);
+  }
+  
+  public Tile getInstance() {
+    return new StandardTower(); 
   }
 }

@@ -63,3 +63,7 @@ void keyPressed() {
 PVector tileToPoint(PVector p) {
   return new PVector((p.x + 0.5)* tileWidth + GRID_START_X, (p.y + 0.5) * tileHeight + GRID_START_Y);
 }
+
+PVector tileToCorner(PVector p) {
+  return new PVector(p.x * tileWidth + GRID_START_X, p.y * tileHeight + GRID_START_Y);
+}

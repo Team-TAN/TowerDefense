@@ -2,9 +2,8 @@ public class OrangeTile extends Tile {
   
   public OrangeTile() {
      colorOfTile = 25;
+     index = 1;
   }
   
-  public void update() {
-    
-  }
+  public Tile getInstance() { return new OrangeTile();}
 }

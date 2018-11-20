@@ -8,6 +8,9 @@ public class Player {
   public int fans;
   public int minionCount;
   
+  public int selectedTileX;
+  public int selectedTileY;
+  
   public Player() {
     health = MAX_HEALTH;
     fans = 200;

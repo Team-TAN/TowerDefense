@@ -30,10 +30,11 @@ public class GameSceneMultiplayer extends Scene {
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
   };
+  
+  private Tile[][] worldTiles = new Tile[10][20];
 
 
   public Scene update() {
-
     if (isMiniGame) {
       miniGame.draw();
       if (rhythmTimeLeft <= 0) {
@@ -67,7 +68,6 @@ public class GameSceneMultiplayer extends Scene {
         }
       }
     }
-
     return null;
   }
 
@@ -77,13 +77,14 @@ public class GameSceneMultiplayer extends Scene {
     // start background music
     for (int i = 0; i < worldRows; ++i)
     {
-      //for (int j = 0; j < worldCols; ++j) {
-      //  if ((i >= 3 && i <= 6) && (j == 0 || j == 19)) {
-      //    world[i][j] = 4;
-      //  } else {
-      //    world[i][j] = floor(random(0, 4));
-      //  }
-      //}
+      for (int j = 0; j < worldCols; ++j) {
+        if ((i >= 3 && i <= 6) && (j == 0 || j == 19)) {
+          world[i][j] = 5;
+          instantiate(i,j);
+        } else {
+          instantiate(i,j);
+        }
+      }
     }
       
     setDanceFloor();
@@ -94,26 +95,27 @@ public class GameSceneMultiplayer extends Scene {
     int index = startingColorIndex;
     for(int i = 0; i < worldRows; ++i) {
       for(int j = i, k = 0; j >=0 && k < worldCols; --j, ++k) {
-        changeTile(i,j,k,index);
+        changeTile(j,k,index);
       }
       index = (index + 1) % 5;
     }
       
       for(int i = 1; i < worldCols; ++i) {
         for(int j = 9, k = i; j >= 0 && k < worldCols; --j, ++k) {
-          changeTile(i,j,k,index);
+          changeTile(j,k,index);
         }
         index = (index + 1) % 5;
       }
   }
   
-  public void changeTile(int i, int j, int k, int index) {
+  public void changeTile(int j, int k, int index) {
     if(world[j][k] > 5) {
-      tiles.get(world[j][k]).backgroundTile = tiles.get(index);
+      worldTiles[j][k].setBackgroundTile(index);
     } else {
-      if ((j >= 3 && j <= 6) && (k == 0 || k == 19)) {
-        world[j][k] = 5;
-      } else world[j][k] = index; 
+      if (!(j >= 3 && j <= 6) || !(k == 0 || k == 19)) {
+        world[j][k] = index;
+        instantiate(j,k);
+      }
     }
   }
 
@@ -168,17 +170,17 @@ public class GameSceneMultiplayer extends Scene {
 
   public void mapUpdate() {
     setupScene();
-    PVector pos = new PVector(GRID_START_X, GRID_START_Y);
-    //println(pos);
     for (int i = 0; i < worldRows; ++i)
     {
       for (int j = 0; j < worldCols; ++j) {
-        tiles.get(world[i][j]).display(pos);
-        pos.x += tileWidth;
+        worldTiles[i][j].display();
       }   
-      pos.y += tileHeight;
-      pos.x = GRID_START_X;
     }
+  }
+  
+  private void instantiate(int i, int j) {
+    worldTiles[i][j] = tiles.get(world[i][j]).getInstance();
+    worldTiles[i][j].pos = tileToCorner(new PVector(j,i));
   }
 
   public void buildingUpdate() {
