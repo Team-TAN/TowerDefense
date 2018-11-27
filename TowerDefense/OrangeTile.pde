@@ -5,5 +5,9 @@ public class OrangeTile extends Tile {
      index = 1;
   }
   
+  public void display() {
+    image(Images.orangeTile, pos.x, pos.y, tileWidth, tileHeight);
+  }
+  
   public Tile getInstance() { return new OrangeTile();}
 }

@@ -35,10 +35,13 @@ class RhythmGame {
   
   private int alpha = 200;
   
-  public RhythmGame(Player player1, Player player2, int songIndex) {
+  private float length;
+  
+  public RhythmGame(Player player1, Player player2, int songIndex, float length) {
     
     this.player1 = player1;
     this.player2 = player2;
+    this.length = length * 1000;
     
     player = minim.loadFile(songs[songIndex]);
     dummy = minim.loadFile(songs[songIndex]);
@@ -59,7 +62,7 @@ class RhythmGame {
       player.rewind();
       player.play();
       start = true;
-    } else if (dummy.position() > 26300) {
+    } else if (dummy.position() > length - 3900) {
       dummy.pause();
     }
   
@@ -138,7 +141,7 @@ class RhythmGame {
   }*/
   
   public void addPlayer1Creep(boolean isPowered) {
-    Creep c = new Creep(isPowered);
+    Creep c = new Creep(isPowered, true);
     //c.targetPos = 
     c.timeToLeave = player1StartTime;
     player1StartTime += .8;
@@ -150,7 +153,7 @@ class RhythmGame {
   }
 
   public void addPlayer2Creep(boolean isPowered) {
-    Creep c = new Creep(isPowered);
+    Creep c = new Creep(isPowered, false);
      
     c.timeToLeave = player2StartTime;
     player2StartTime += .8;

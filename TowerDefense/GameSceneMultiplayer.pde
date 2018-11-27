@@ -2,8 +2,8 @@ public class GameSceneMultiplayer extends Scene {
 
   private RhythmGame miniGame = null;
 
-  private Player player1 = new Player();
-  private Player player2 = new Player();
+  public Player player1 = new Player(new PVector(0,0));
+  public Player player2 = new Player(new PVector(19, 0));
 
 
   private boolean isBuildingState;
@@ -13,7 +13,7 @@ public class GameSceneMultiplayer extends Scene {
   private final float MAX_BUILD_TIME = 20;
   private float buildTimeLeft = MAX_BUILD_TIME;
 
-  private final float MAX_RHYTHM_TIME = 13;
+  private final float MAX_RHYTHM_TIME = 10;
   private float rhythmTimeLeft = MAX_RHYTHM_TIME;
   
   private int startingColorIndex = 0;
@@ -21,17 +21,17 @@ public class GameSceneMultiplayer extends Scene {
   private int[][] world = {
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
-    {0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
   };
   
-  private Tile[][] worldTiles = new Tile[10][20];
+  public Tile[][] worldTiles = new Tile[10][20];
 
 
   public Scene update() {
@@ -45,27 +45,7 @@ public class GameSceneMultiplayer extends Scene {
       if (isBuildingState) {
         buildingUpdate();
       } else {
-        for (int i = player1.creeps.size() - 1; i >= 0; --i) {
-          Creep c = player1.creeps.get(i);
-          if(c.timeToLeave <= 0) c.update();
-          else c.timeUpdate(); 
-          
-          if (c.isDead)
-            player1.creeps.remove(i);
-        }
-
-        for (int i = player2.creeps.size() - 1; i >= 0; --i) {
-          Creep c = player2.creeps.get(i);
-          if(c.timeToLeave <= 0) c.update();
-          else c.timeUpdate(); 
-          
-          if (c.isDead)
-            player2.creeps.remove(i);
-        }
-
-        if (player1.creeps.isEmpty() && player2.creeps.isEmpty()) {
-          isBuildingState = true;
-        }
+        attackUpdate();
       }
     }
     return null;
@@ -91,20 +71,20 @@ public class GameSceneMultiplayer extends Scene {
     isBuildingState = true;
   }
   
-  public void setDanceFloor() {
+  private void setDanceFloor() {
     int index = startingColorIndex;
     for(int i = 0; i < worldRows; ++i) {
       for(int j = i, k = 0; j >=0 && k < worldCols; --j, ++k) {
         changeTile(j,k,index);
       }
-      index = (index + 1) % 5;
+      index = (index + 1) % 2;
     }
       
       for(int i = 1; i < worldCols; ++i) {
         for(int j = 9, k = i; j >= 0 && k < worldCols; --j, ++k) {
           changeTile(j,k,index);
         }
-        index = (index + 1) % 5;
+        index = (index + 1) % 2;
       }
   }
   
@@ -149,26 +129,12 @@ public class GameSceneMultiplayer extends Scene {
     text(player1.fans, 310, 34); // p1
     text(player2.fans, 670, 34); //p2
     //dj tower 1
-    fill(255);
-    rect(10, 170, 90, 280);
+    image(Images.djStand1, 10, 170, 90, 280);
     //dj tower 2
-    rect(900, 170, 90, 280);
+    image(Images.djStand2, 900, 170, 90, 280);
   }
 
-  public void onMousePressed() {
-
-    if (isBuildingState) {
-      startMiniGame();
-    }
-  }
-
-  public void onKeyPressed() {
-    if (isMiniGame) {
-      miniGame.onKeyPressed();
-    }
-  }
-
-  public void mapUpdate() {
+  private void mapUpdate() {
     setupScene();
     for (int i = 0; i < worldRows; ++i)
     {
@@ -180,10 +146,17 @@ public class GameSceneMultiplayer extends Scene {
   
   private void instantiate(int i, int j) {
     worldTiles[i][j] = tiles.get(world[i][j]).getInstance();
-    worldTiles[i][j].pos = tileToCorner(new PVector(j,i));
+    worldTiles[i][j].pos = tileToCorner(new PVector(j, i));
+  }
+  
+  private void instantiate(int i, int j, int index) {
+    worldTiles[i][j] = tiles.get(world[i][j]).getInstance(tiles.get(index));
+    PVector p = tileToCorner(new PVector(j, i));
+    worldTiles[i][j].pos = p;
+    worldTiles[i][j].backgroundTile.pos = p;
   }
 
-  public void buildingUpdate() {
+  private void buildingUpdate() {
     fill(255);
     text("Building State", 465, 20);
 
@@ -195,20 +168,69 @@ public class GameSceneMultiplayer extends Scene {
     fill(fillColor, 255, 255);
     arc(500, 70, 60, 60, startAngle, startAngle + TWO_PI * percent);  
     colorMode(RGB);
+    
+    // highlighting player 1 selected tile
+    PVector p = player1.selectedBuildTile;
+    stroke(0);
+    strokeWeight(2);
+    noFill();
+    PVector t = worldTiles[(int)p.y][(int)p.x].pos;
+    rect(t.x, t.y, tileWidth, tileHeight);
+    
+    //highlighting player 2 selected tile
+    p = player2.selectedBuildTile;
+    stroke(0);
+    strokeWeight(2);
+    noFill();
+    t = worldTiles[(int)p.y][(int)p.x].pos;
+    rect(t.x, t.y, tileWidth, tileHeight);
+    noStroke();
+    
     if (buildTimeLeft <= 0) {
       startMiniGame();
     } else buildTimeLeft -= Time.deltaTime;
   }
+  
+  private void attackUpdate() {
+    for (int i = player1.creeps.size() - 1; i >= 0; --i) {
+      Creep c = player1.creeps.get(i);
+      if(c.timeToLeave <= 0) c.update();
+      else c.timeUpdate(); 
+      
+      if (c.isDead)
+        player1.creeps.remove(i);
+    }
 
-  public void startMiniGame() {
+    for (int i = player2.creeps.size() - 1; i >= 0; --i) {
+      Creep c = player2.creeps.get(i);
+      if(c.timeToLeave <= 0) c.update();
+      else c.timeUpdate(); 
+      
+      if (c.isDead)
+        player2.creeps.remove(i);
+    }
+    
+    for (int i = 0; i < worldRows; ++i)
+    {
+      for (int j = 0; j < worldCols; ++j) {
+        worldTiles[i][j].update(this, j < 10);
+      }   
+    }
+
+    if (player1.creeps.isEmpty() && player2.creeps.isEmpty()) {
+      isBuildingState = true;
+    }
+  }
+
+  private void startMiniGame() {
     isBuildingState = false;
     buildTimeLeft = MAX_BUILD_TIME;
     isMiniGame = true;
-    miniGame = new RhythmGame(player1, player2, 0);
+    miniGame = new RhythmGame(player1, player2, 0, MAX_RHYTHM_TIME);
     //pause background music
   }
   
-  public void onMiniGameEnd() {
+  private void onMiniGameEnd() {
     rhythmTimeLeft = MAX_RHYTHM_TIME;
     miniGame.player.pause();
     isMiniGame = false;
@@ -242,5 +264,60 @@ public class GameSceneMultiplayer extends Scene {
     for (int i = 0; i < player2.creeps.size(); ++i) {
       player2.creeps.get(i).findPath();
     }
+  }
+  
+  public void onMousePressed() {
+    if (isBuildingState) {
+      startMiniGame();
+    }
+  }
+
+  public void onKeyPressed() {
+    if (isMiniGame) {
+      miniGame.onKeyPressed();
+    } else if (isBuildingState) {
+      //player 1 movements ++ towers
+      PVector p = player1.selectedBuildTile;
+      if(key == 'w' && p.y > 0 && !(p.y == 7 && p.x == 0))
+        p.y--;
+      else if(key == 's' && p.y < worldRows-1 && !(p.y == 2 && p.x == 0))
+        p.y++;
+      else if(key == 'a' && p.x > 0 && !(p.x == 1 && p.y > 2 && p.y < 7))
+        p.x--;
+      else if(key == 'd' && p.x < 8)
+        p.x++;
+      else if(world[(int)p.y][(int)p.x] < 5) {
+        if(key == '1') setTile(p, 6);
+        else if(key == '2') setTile(p, 7);
+        else if(key == '3') setTile(p, 8);
+        else if(key == '4') setTile(p, 9);
+        else if(key == '5') setTile(p, 10);
+      }
+        
+      // player 1 movements + towers
+      p = player2.selectedBuildTile;
+      if(keyCode == 38 && p.y > 0 && !(p.y == 7 && p.x == 19))
+        p.y--;
+      else if(keyCode == 40 && p.y < worldRows-1 && !(p.y == 2 && p.x == 19))
+        p.y++;
+      else if(keyCode == 37 && p.x > 11)
+        p.x--;
+      else if(keyCode == 39 && p.x < 19 && !(p.x == 18 && p.y > 2 && p.y < 7))
+        p.x++;
+      else if(world[(int)p.y][(int)p.x] < 5) {
+        if(key == '6') setTile(p, 6);
+        else if(key == '7') setTile(p, 7);
+        else if(key == '8') setTile(p, 8);
+        else if(key == '9') setTile(p, 9);
+        else if(key == '0') setTile(p, 10);
+      }
+      
+    }
+  }
+  
+  private void setTile(PVector p, int num) {
+    int i = world[(int)p.y][(int)p.x];
+    world[(int)p.y][(int)p.x] = num;
+    instantiate((int)p.y, (int)p.x, i);
   }
 }

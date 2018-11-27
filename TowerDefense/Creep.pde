@@ -12,11 +12,17 @@ public class Creep {
   
   public float timeToLeave = 0;
   private float speed = 50;
+  private boolean isPlayer1;
+  
+  private float hoverCounter = 0f;
+  private final float hoverHeight = 3f;
+  private final float hoverSpeed = 6;
   
   int i = 0;
   
-  public Creep(boolean isPowered) {
+  public Creep(boolean isPowered, boolean isPlayer1) {
     this.isPowered = isPowered;
+    this.isPlayer1 = isPlayer1;
     if(isPowered) {
       health = 100;
     } else {
@@ -25,11 +31,30 @@ public class Creep {
   }
   
   public void update() {
-    fill(10);
     timeUpdate();
-    int size = (isPowered ? 20 : 15);
-    ellipse(pos.x, pos.y, size, size); 
+    hoverCounter += Time.deltaTime;
+    PImage img;
     
+    if(isPlayer1) {
+      tint(100, 200, 255);
+      if(isPowered) {
+        img = Images.creepUpgraded1;
+      } else {
+        img = Images.creepNormal1;
+      }
+    } else {
+      if(isPowered) {
+        img = Images.creepUpgraded2;
+      } else {
+        img = Images.creepNormal2;
+      }
+    }
+    
+    if(isPowered)
+      image(img, pos.x - tileWidth / 2, pos.y - tileHeight / 2 + sin(hoverCounter * hoverSpeed) * hoverHeight, tileWidth, tileHeight);
+    else 
+      image(img, pos.x - tileWidth / 2 + 2, 2 + pos.y - tileHeight / 2 + sin(hoverCounter * hoverSpeed) * hoverHeight, tileWidth - 4, tileHeight - 4);
+    noTint();
     if(nextTile != null) {
       if(tileToPoint(nextTile).equals(pos)) {
         
@@ -49,7 +74,7 @@ public class Creep {
       // deal damage to base
       isDead = true;
     } else {
-      
+      if(health < 0) isDead = true;
     }
   }
   

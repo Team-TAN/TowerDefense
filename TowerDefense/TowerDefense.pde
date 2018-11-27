@@ -25,16 +25,18 @@ final int GRID_START_Y = 120;
 
 void setup() {
   size(1000, 500);
+  initImages();
   minim = new Minim(this);
   songs = new String[]{ "song.mp3", "Dragonforce - Through the Fire and Flames(Lyrics).mp3"};
   //colorMode(HSB);
-  tiles.put(0, new RedTile());
-  tiles.put(1, new OrangeTile());
-  tiles.put(2, new YellowTile());
-  tiles.put(3, new BlueTile());
-  tiles.put(4, new GreenTile());
+  tiles.put(0, new OrangeTile());
+  tiles.put(1, new YellowTile());
   tiles.put(5, new SpawnTile());
   tiles.put(6, new StandardTower());
+  tiles.put(7, new BruiserTower());
+  tiles.put(8, new GlacierTower());
+  tiles.put(9, new LightningTower());
+  tiles.put(10, new WallTower());
   scene = new GameSceneMultiplayer();
   scene.onSceneEnter();
 }
@@ -66,4 +68,23 @@ PVector tileToPoint(PVector p) {
 
 PVector tileToCorner(PVector p) {
   return new PVector(p.x * tileWidth + GRID_START_X, p.y * tileHeight + GRID_START_Y);
+}
+
+private void initImages() {
+  Images.standardTower = loadImage("tower_1_standard.png");
+  Images.bruiserTower = loadImage("tower_2_bruiser.png");
+  Images.glacierTower = loadImage("tower_3_glacier.png");
+  Images.lightningTower = loadImage("tower_4_lightning.png");
+  Images.wall = loadImage("tower_5_wall.png");
+  
+  Images.djStand1 = loadImage("DJ_Stand_Player1.png");
+  Images.djStand2 = loadImage("DJ_Stand_Player2.png");
+  
+  Images.creepNormal1 = loadImage("Creep_Player1_Normal.png");
+  Images.creepNormal2 = loadImage("Creep_Player2_Normal.png");
+  Images.creepUpgraded1 = loadImage("Creep_Player1_Upgraded.png");
+  Images.creepUpgraded2 = loadImage("Creep_Player2_Upgraded.png");
+  
+  Images.orangeTile = loadImage("floor_tiles_orange.png");
+  Images.yellowTile = loadImage("floor_tiles_yellow.png");
 }

@@ -6,18 +6,18 @@ public abstract class Tile {
   public int cost = 1;
   public PVector pos;
   
-  public void update() {
-    
+  public void update(GameSceneMultiplayer scene, boolean player1) {
   }
   
   public void display() {
     colorMode(HSB);
     fill(colorOfTile, 255, 255);
-    rect(pos.x, pos.y, tileWidth, tileHeight);
+    if(pos != null) rect(pos.x, pos.y, tileWidth, tileHeight);
     colorMode(RGB);
   }
   
-  public abstract Tile getInstance();
+  public Tile getInstance() { return null;}
+  public Tile getInstance(Tile background) { return null;}
   
   public void setBackgroundTile(int index) {
     backgroundTile = tiles.get(index).getInstance();

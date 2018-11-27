@@ -10,10 +10,12 @@ public class Player {
   
   public int selectedTileX;
   public int selectedTileY;
+  public PVector selectedBuildTile;
   
-  public Player() {
+  public Player(PVector selected) {
     health = MAX_HEALTH;
     fans = 200;
+    selectedBuildTile = selected;
   }
   
   public float healthPercent() {

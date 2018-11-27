@@ -5,10 +5,7 @@ public class BlueTile extends Tile {
      index = 3;
   }
   
-  public void update() {
-    
-  }
-  
+  @Override
   public Tile getInstance() {
     return new BlueTile(); 
   }
