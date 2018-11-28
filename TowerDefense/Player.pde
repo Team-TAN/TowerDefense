@@ -6,11 +6,14 @@ public class Player {
   
   public int health;
   public int fans;
-  public int minionCount;
   
   public int selectedTileX;
   public int selectedTileY;
   public PVector selectedBuildTile;
+  
+  public float creepHealthMultiplyer = 1;
+  public float creepSpeedMultiplyer = 1;
+  public float creepSpawnMultiplyer = 1;
   
   public Player(PVector selected) {
     health = MAX_HEALTH;

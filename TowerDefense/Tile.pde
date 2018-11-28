@@ -4,6 +4,7 @@ public abstract class Tile {
   protected Tile backgroundTile = null;
   protected int colorOfTile = 0;
   public int cost = 1;
+  public int fanCost;
   public PVector pos;
   
   public void update(GameSceneMultiplayer scene, boolean player1) {
@@ -23,4 +24,8 @@ public abstract class Tile {
     backgroundTile = tiles.get(index).getInstance();
     backgroundTile.pos = pos;
   }
+  
+  public boolean upgrade() { return false; }
+  
+  public int getUpgradeFanCost(int index) { return 0; }
 }

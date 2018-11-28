@@ -36,12 +36,14 @@ class RhythmGame {
   private int alpha = 200;
   
   private float length;
+  private float creepHealthMult;
   
-  public RhythmGame(Player player1, Player player2, int songIndex, float length) {
+  public RhythmGame(Player player1, Player player2, int songIndex, float length, float creepHealthMult) {
     
     this.player1 = player1;
     this.player2 = player2;
     this.length = length * 1000;
+    this.creepHealthMult = creepHealthMult;
     
     player = minim.loadFile(songs[songIndex]);
     dummy = minim.loadFile(songs[songIndex]);
@@ -141,8 +143,9 @@ class RhythmGame {
   }*/
   
   public void addPlayer1Creep(boolean isPowered) {
-    Creep c = new Creep(isPowered, true);
-    //c.targetPos = 
+    Creep c = new Creep(isPowered, true, creepHealthMult * player1.creepHealthMultiplyer);
+    c.speedMult = player1.creepSpeedMultiplyer;
+    c.spawnMult = player1.creepSpawnMultiplyer;
     c.timeToLeave = player1StartTime;
     player1StartTime += .8;
     int rand = floor(random(3, 7));
@@ -153,8 +156,9 @@ class RhythmGame {
   }
 
   public void addPlayer2Creep(boolean isPowered) {
-    Creep c = new Creep(isPowered, false);
-     
+    Creep c = new Creep(isPowered, false, creepHealthMult * player2.creepHealthMultiplyer);
+    c.speedMult = player2.creepSpeedMultiplyer;
+    c.spawnMult = player2.creepSpawnMultiplyer;
     c.timeToLeave = player2StartTime;
     player2StartTime += .8;
     int rand = floor(random(3, 7));

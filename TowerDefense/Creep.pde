@@ -10,6 +10,9 @@ public class Creep {
   public float health;
   public boolean isPowered;
   
+  public float speedMult;
+  public float spawnMult;
+  
   public float timeToLeave = 0;
   private float speed = 50;
   private boolean isPlayer1;
@@ -20,13 +23,13 @@ public class Creep {
   
   int i = 0;
   
-  public Creep(boolean isPowered, boolean isPlayer1) {
+  public Creep(boolean isPowered, boolean isPlayer1, float healthMult) {
     this.isPowered = isPowered;
     this.isPlayer1 = isPlayer1;
     if(isPowered) {
-      health = 100;
+      health = 125 * healthMult;
     } else {
-      health = 50;
+      health = 75 * healthMult;
     }
   }
   
@@ -62,7 +65,7 @@ public class Creep {
       } else {
         PVector distance = PVector.sub(tileToPoint(nextTile), pos);
         PVector dir = distance.copy().normalize();
-        PVector travel = new PVector(speed*Time.deltaTime * dir.x, speed*Time.deltaTime * dir.y);
+        PVector travel = new PVector(speed * speedMult * Time.deltaTime * dir.x, speed * speedMult * Time.deltaTime * dir.y);
         if(travel.mag() > distance.mag())
           pos = tileToPoint(nextTile.copy());
         else
@@ -80,7 +83,7 @@ public class Creep {
   
   public void timeUpdate() {
     if(timeToLeave >= 0) {
-      timeToLeave -= Time.deltaTime;
+      timeToLeave -= Time.deltaTime * spawnMult;
     }
   }
   
