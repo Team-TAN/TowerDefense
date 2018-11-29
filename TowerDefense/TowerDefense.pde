@@ -37,8 +37,9 @@ void setup() {
   backgroundMusic2 = minim.loadFile("backgroundMusic2.mp3");
   currentMusic = backgroundMusic1;
   currentMusic.play();
-  tiles.put(0, new OrangeTile());
-  tiles.put(1, new YellowTile());
+  tiles.put(0, new RedTile());
+  tiles.put(1, new OrangeTile());
+  tiles.put(2, new YellowTile());
   tiles.put(5, new SpawnTile());
   tiles.put(6, new StandardTower());
   tiles.put(7, new BruiserTower());
@@ -106,4 +107,6 @@ private void initImages() {
   
   Images.orangeTile = loadImage("floor_tiles_orange.png");
   Images.yellowTile = loadImage("floor_tiles_yellow.png");
+  Images.redTile = loadImage("floor_tiles_red.png");
+  Images.spawnTile = loadImage("floor_tiles_purple.png");
 }

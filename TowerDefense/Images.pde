@@ -16,4 +16,6 @@ public static class Images {
   
   public static PImage orangeTile;
   public static PImage yellowTile;
+  public static PImage redTile;
+  public static PImage spawnTile;
 }

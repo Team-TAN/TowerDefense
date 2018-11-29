@@ -2,7 +2,7 @@ public class OrangeTile extends Tile {
   
   public OrangeTile() {
      colorOfTile = 25;
-     index = 0;
+     index = 1;
   }
   
   public void display() {

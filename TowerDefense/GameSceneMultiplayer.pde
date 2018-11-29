@@ -22,6 +22,7 @@ public class GameSceneMultiplayer extends Scene {
   private float rhythmTimeLeft = maxRhythmTime;
   
   private int startingColorIndex = 0;
+  private int beats = 0;
   private int turns = 0;
   private float creepHealthMult = 1;
 
@@ -87,14 +88,14 @@ public class GameSceneMultiplayer extends Scene {
       for(int j = i, k = 0; j >=0 && k < worldCols; --j, ++k) {
         changeTile(j,k,index);
       }
-      index = (index + 1) % 2;
+      index = (index + 1) % 3;
     }
       
       for(int i = 1; i < worldCols; ++i) {
         for(int j = 9, k = i; j >= 0 && k < worldCols; --j, ++k) {
           changeTile(j,k,index);
         }
-        index = (index + 1) % 2;
+        index = (index + 1) % 3;
       }
   }
   
@@ -148,7 +149,11 @@ public class GameSceneMultiplayer extends Scene {
   private void mapUpdate() {
     setupScene();
     beat.detect(currentMusic.mix);
-    if(beat.isOnset()) startingColorIndex = (startingColorIndex + 1) % 2;
+    if(beat.isOnset()) {
+      beats++;
+      if(beats % 3 == 0)
+        startingColorIndex = (startingColorIndex + 1) % 3;
+    }
     setDanceFloor();
     for (int i = 0; i < worldRows; ++i)
     {
@@ -437,7 +442,7 @@ public class GameSceneMultiplayer extends Scene {
     isMiniGame = false;
     // resume background music
     currentMusic.play();
-    musicPaused = true;
+    musicPaused = false;
     
     //remake map for pathfinder
     for(int i = 0; i < worldRows; ++i) {
