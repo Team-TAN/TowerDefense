@@ -24,8 +24,4 @@ public abstract class Tile {
     backgroundTile = tiles.get(index).getInstance();
     backgroundTile.pos = pos;
   }
-  
-  public boolean upgrade() { return false; }
-  
-  public int getUpgradeFanCost(int index) { return 0; }
 }

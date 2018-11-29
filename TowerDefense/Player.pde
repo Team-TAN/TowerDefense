@@ -1,6 +1,6 @@
 public class Player {
   
-  private final int MAX_HEALTH = 100;
+  private final int MAX_HEALTH = 200;
   
   public ArrayList<Creep> creeps = new ArrayList<Creep>();
   
@@ -22,7 +22,7 @@ public class Player {
   }
   
   public float healthPercent() {
-    return health / MAX_HEALTH;  
+    return (float)health / MAX_HEALTH;  
   }
   
 }

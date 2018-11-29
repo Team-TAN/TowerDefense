@@ -1,6 +1,86 @@
 public class TowerTile extends Tile {
   
+  public int upgradeIndex;
+  public int health;
+  public UpgradeData[] upgrades;
+  private float timeLeftToShoot;
   
+  private Creep target;
+  private ArrayList<Creep> inRange = new ArrayList<Creep>();
   
+  public TowerTile(UpgradeData[] upgrades, int cost, int fanCost, int index) {
+    upgradeIndex = 0;
+    this.upgrades = upgrades;
+    health = this.upgrades[0].health;
+    timeLeftToShoot = 0;
+    
+    this.cost = cost;
+    this.fanCost = fanCost;
+    this.index = index;
+  }
   
+  public void display(PImage img) {
+    backgroundTile.display();
+    image(img, pos.x, pos.y, tileWidth, tileHeight);
+  }
+  
+  public void displayRadius() {
+    fill(255, 255, 255, 30);
+    noStroke();
+    ellipse(pos.x + tileWidth / 2, pos.y + tileHeight / 2, getRange(0) * 2, getRange(0) * 2);
+  }
+  
+  @Override
+  public void update(GameSceneMultiplayer scene, boolean player1) {
+    inRange.clear();
+    ArrayList<Creep> creeps = (player1 ? scene.player2.creeps : scene.player1.creeps);
+    
+    for(int i = 0; i < creeps.size(); ++i) {
+      Creep c = creeps.get(i);
+      if(PVector.sub(new PVector(pos.x + tileWidth / 2, pos.y + tileHeight / 2), c.pos).mag() <= getRange(0)) inRange.add(c);
+    }
+    
+    if(!inRange.isEmpty()) {
+      target = inRange.get(0);
+    
+      timeLeftToShoot -= Time.deltaTime;
+      if(timeLeftToShoot <= 0) {
+        target.health -= getDamage(0);
+        ellipse(pos.x, pos.y, 20, 20);
+        timeLeftToShoot = getFireSpeed(0);
+      }
+    }
+  }
+  
+  public int getDamage(int index) {
+    return upgrades[upgradeIndex + index].damage;
+  }
+  
+  public float getFireSpeed(int index) {
+    return upgrades[upgradeIndex + index].fireSpeed;
+  }
+  
+  public int getRange(int index) {
+    return upgrades[upgradeIndex + index].range;
+  }
+  
+  public int getUpgradeFanCost(int index) {
+    if(upgradeIndex + index < upgrades.length)
+      return upgrades[upgradeIndex + index].fanCost;
+    
+    return -1;
+  }
+  
+  public boolean upgrade() {
+     if(upgradeIndex + 1 < upgrades.length) { 
+       upgradeIndex++;
+       return true;
+     }
+     
+     return false;
+  }
+  
+  public void upgradeHealth() {
+     health = upgrades[upgradeIndex].health;
+  }
 }

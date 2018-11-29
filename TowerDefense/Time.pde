@@ -7,7 +7,7 @@ static class Time {
   
   public static void update(float milis) {
     float currentTime = milis;
-    deltaTime = (currentTime - prevTime) / 1000;
+    deltaTime = toSeconds(currentTime - prevTime);
     prevTime = currentTime;
     
     timeSinceScene += deltaTime;

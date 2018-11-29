@@ -11,7 +11,11 @@ import java.util.LinkedList;
 HashMap<Integer, Tile> tiles = new HashMap<Integer, Tile>();
 String[] songs;
 Scene scene;
-AudioPlayer song;
+AudioPlayer backgroundMusic1;
+AudioPlayer backgroundMusic2;
+AudioPlayer currentMusic;
+boolean musicPaused = false;
+BeatDetect beat;
 Minim minim;
 
 final int tileHeight = 38;
@@ -27,8 +31,12 @@ void setup() {
   size(1000, 500);
   initImages();
   minim = new Minim(this);
+  beat = new BeatDetect();
   songs = new String[]{ "song.mp3", "Dragonforce - Through the Fire and Flames(Lyrics).mp3"};
-  //colorMode(HSB);
+  backgroundMusic1 = minim.loadFile("backgroundMusic1.mp3");
+  backgroundMusic2 = minim.loadFile("backgroundMusic2.mp3");
+  currentMusic = backgroundMusic1;
+  currentMusic.play();
   tiles.put(0, new OrangeTile());
   tiles.put(1, new YellowTile());
   tiles.put(5, new SpawnTile());
@@ -44,6 +52,11 @@ void setup() {
 void draw() {
   background(128);
   Time.update(millis());
+  
+  if(!currentMusic.isPlaying() && !musicPaused) {
+    currentMusic = (currentMusic.equals(backgroundMusic1) ? backgroundMusic2 : backgroundMusic1);
+    currentMusic.play();
+  }
   
   Scene newScene = scene.update();
   if(newScene != null) {
@@ -68,6 +81,12 @@ PVector tileToPoint(PVector p) {
 
 PVector tileToCorner(PVector p) {
   return new PVector(p.x * tileWidth + GRID_START_X, p.y * tileHeight + GRID_START_Y);
+}
+
+int fireSpeedConvert(float fireSpeed) {
+  if(fireSpeed == 0)
+    return 0;
+  return (int)(1 / (fireSpeed * 4) * 100);
 }
 
 private void initImages() {

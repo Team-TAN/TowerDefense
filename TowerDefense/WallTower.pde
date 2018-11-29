@@ -1,14 +1,7 @@
-public class WallTower extends Tile {
-  
-  public int upgradeIndex = 0;
-  public int health;
-  public UpgradeData[] upgrades = { new UpgradeData(75, 0), new UpgradeData(100, 50), new UpgradeData(125, 75), new UpgradeData(150, 100) };
-  
+public class WallTower extends TowerTile { 
   
   public WallTower() {
-    cost = 1200;
-    fanCost = 50;
-    index = 10;
+    super(new UpgradeData[] { new UpgradeData(75, 0), new UpgradeData(100, 50), new UpgradeData(125, 75), new UpgradeData(150, 100) }, 1200, 50, 10);
   }
   
   public WallTower(Tile background) {
@@ -18,28 +11,14 @@ public class WallTower extends Tile {
   
   @Override
   public void display() {
-    backgroundTile.display();
-    image(Images.wall, pos.x, pos.y, tileWidth, tileHeight);
+    super.display(Images.wall);
   }
+  
+  @Override
+  public void update(GameSceneMultiplayer scene, boolean player1) {}
   
   @Override
   public Tile getInstance(Tile background) {
     return new WallTower(background); 
-  }
-  
-    public boolean upgrade() {
-     if(upgradeIndex + 1 < upgrades.length) { 
-       upgradeIndex++;
-       return true;
-     }
-     
-     return false;
-  }
-  
-  public int getUpgradeFanCost(int index) {
-    if(upgradeIndex + index < upgrades.length)
-      return upgrades[upgradeIndex + index].fanCost;
-    
-    return -1;
   }
 }

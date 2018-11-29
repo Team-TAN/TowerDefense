@@ -21,8 +21,6 @@ public class Creep {
   private final float hoverHeight = 3f;
   private final float hoverSpeed = 6;
   
-  int i = 0;
-  
   public Creep(boolean isPowered, boolean isPlayer1, float healthMult) {
     this.isPowered = isPowered;
     this.isPlayer1 = isPlayer1;
@@ -60,25 +58,25 @@ public class Creep {
     noTint();
     if(nextTile != null) {
       if(tileToPoint(nextTile).equals(pos)) {
-        
         nextTile = path.poll();
       } else {
         PVector distance = PVector.sub(tileToPoint(nextTile), pos);
         PVector dir = distance.copy().normalize();
         PVector travel = new PVector(speed * speedMult * Time.deltaTime * dir.x, speed * speedMult * Time.deltaTime * dir.y);
-        if(travel.mag() > distance.mag())
-          pos = tileToPoint(nextTile.copy());
+        if(travel.mag() > distance.mag()) {
+          if(nextTile.equals(targetPos) || (nextTile.x == targetPos.x && nextTile.y > 2 && nextTile.y < 7)) {
+            isDead = true;
+            targetPos = nextTile.copy();
+          }
+          else
+            pos = tileToPoint(nextTile.copy());
+        }
         else
           pos.add(travel);
       }
     }
     
-    if(tileToPoint(targetPos).equals(pos)) {
-      // deal damage to base
-      isDead = true;
-    } else {
-      if(health < 0) isDead = true;
-    }
+    if(health < 0) isDead = true;
   }
   
   public void timeUpdate() {

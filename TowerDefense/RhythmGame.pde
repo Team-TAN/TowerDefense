@@ -236,7 +236,7 @@ class RhythmGame {
     //player2
     /////////////////////////////////////////
   
-    if ( keyCode == 36 || key == '7') {
+    if ( keyCode == 103 || key == '7') {
       for (int i = 0; i <= notes.size() - 1; i++) {
         Note n = notes.get(i);
         //if ( n.x == 600 && n.y >=400) {
