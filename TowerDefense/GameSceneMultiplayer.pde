@@ -5,8 +5,8 @@ public class GameSceneMultiplayer extends Scene {
   public Player player1 = new Player(new PVector(0,0));
   public Player player2 = new Player(new PVector(19, 0));
   
-  UI p1TowerUI = new UI(10, player1);
-  UI p2TowerUI = new UI(545, player2);
+  private UI p1TowerUI = new UI(10, player1);
+  private UI p2TowerUI = new UI(545, player2);
 
   private boolean isBuildingState;
   private boolean isMiniGame = false;
@@ -44,45 +44,144 @@ public class GameSceneMultiplayer extends Scene {
   
   public Tile[][] worldTiles = new Tile[10][20];
 
-
+  @Override
   public Scene update() {
     if (isMiniGame) {
       miniGame.draw();
-      if (rhythmTimeLeft <= 0) {
+      if (rhythmTimeLeft <= 0)
         onMiniGameEnd();
-      } else rhythmTimeLeft -= Time.deltaTime;
+      else rhythmTimeLeft -= Time.deltaTime;
     } else {
       mapUpdate();
        if(isGameOver) {
         gameOverUpdate();
         if(restart) return new GameSceneMultiplayer();
-      } else if (isBuildingState) {
+      } else if (isBuildingState)
         buildingUpdate();
-      }else {
+      else 
         attackUpdate();
-      }
     }
-    
     return null;
   }
 
-  
-
+  @Override
   public void onSceneEnter() {
-    for (int i = 0; i < worldRows; ++i)
-    {
+    for (int i = 0; i < worldRows; ++i) {
       for (int j = 0; j < worldCols; ++j) {
         if ((i >= 3 && i <= 6) && (j == 0 || j == 19)) {
           world[i][j] = 5;
           instantiate(i,j);
-        } else {
+        } else
           instantiate(i,j);
+      }
+    }
+    setDanceFloor();
+    isBuildingState = true;
+  }
+  
+  @Override
+  public void onSceneExit() {
+    Time.timeScale = 1;
+  }
+  
+  @Override
+  public void onMousePressed() {
+    if (isBuildingState) {
+      startMiniGame();
+    } else if (isGameOver) {
+      restart = true;
+    }
+  }
+
+  @Override
+  public void onKeyPressed() {
+    if (isMiniGame) {
+      miniGame.onKeyPressed();
+    } else if (isBuildingState) {
+      //player 1 movements + towers
+      PVector p = player1.selectedBuildTile;
+      int tile = world[(int)p.y][(int)p.x];
+      if((key == 'w' || key == 'W') && p.y > 0)
+        p.y--;
+      else if((key == 's' || key == 'S') && p.y < worldRows-1)
+        p.y++;
+      else if((key == 'a' || key == 'A') && p.x > 0)
+        p.x--;
+      else if((key == 'd' || key == 'D') && p.x < 8)
+        p.x++;
+      else if(tile < 5) {
+        if(keyCode == 49) setTile(p, 6, true);
+        else if(keyCode == 50) setTile(p, 7, true);
+        else if(keyCode == 51) setTile(p, 8, true);
+        else if(keyCode == 52) setTile(p, 9, true);
+        else if(keyCode == 53) setTile(p, 10, true);
+      } else if(tile == 5) {
+        if(keyCode == 49 && player1.fans - 100 >= 0 && player1.creepSpeedMultiplyer < 3.5f) {
+          player1.creepSpeedMultiplyer += .25f;
+          player1.fans -= creepSpeedCost;
+        } else if(keyCode == 50 && player1.fans - 75 >= 0) {
+          player1.creepHealthMultiplyer += .25f;
+          player1.fans -= creepHealthCost;
+        } else if(keyCode == 51 && player1.fans - 125 >= 0 && player1.creepSpawnMultiplyer < 2.0f) {
+          player1.creepSpawnMultiplyer += .2f;
+          player1.fans -= creepSpawnCost;
+        }
+      } else if(tile > 5) {
+        TowerTile tileObj = (TowerTile) worldTiles[(int)p.y][(int)p.x];
+        if(keyCode == 49 && player1.fans - tileObj.getUpgradeFanCost(1) >= 0) {
+          if(tileObj.upgrade()) { 
+            player1.fans -= tileObj.getUpgradeFanCost(0);
+            tileObj.upgradeHealth();
+          }
+        } else if (keyCode == 50) {
+          player1.fans += tileObj.fanCost / 2;
+          world[(int)p.y][(int)p.x] = tileObj.backgroundTile.index;
+          worldTiles[(int)p.y][(int)p.x] = tileObj.backgroundTile;
+        }
+      }
+        
+      // player 2 movements + towers
+      p = player2.selectedBuildTile;
+      tile = world[(int)p.y][(int)p.x];
+      if(keyCode == 38 && p.y > 0)
+        p.y--;
+      else if(keyCode == 40 && p.y < worldRows-1)
+        p.y++;
+      else if(keyCode == 37 && p.x > 11)
+        p.x--;
+      else if(keyCode == 39 && p.x < 19)
+        p.x++;
+      else if(tile < 5) {
+        if(key == '6' || keyCode == 97) setTile(p, 6, false);
+        else if(key == '7' || keyCode == 98) setTile(p, 7, false);
+        else if(key == '8' || keyCode == 99) setTile(p, 8, false);
+        else if(key == '9' || keyCode == 100) setTile(p, 9, false);
+        else if(key == '0' || keyCode == 101) setTile(p, 10, false);
+      } else if(tile == 5) {
+        if((key == '6' || keyCode == 97) && player2.fans - 100 >= 0 && player2.creepSpeedMultiplyer < 4) {
+          player2.creepSpeedMultiplyer += .25f;
+          player2.fans -= creepSpeedCost;
+        } else if((key == '7' || keyCode == 98) && player2.fans - 75 >= 0) {
+          player2.creepHealthMultiplyer += .25f;
+          player2.fans -= creepHealthCost;
+        } else if((key == '8' || keyCode == 99) && player2.fans - 125 >= 0 && player2.creepSpawnMultiplyer < 2.0f) {
+          player2.creepSpawnMultiplyer += .2f;
+          player2.fans -= creepSpawnCost;
+        }
+      } else if(tile > 5) {
+        TowerTile tileObj = (TowerTile) worldTiles[(int)p.y][(int)p.x];
+        if((key == '6' || keyCode == 97) && player2.fans - tileObj.getUpgradeFanCost(1) >= 0) {
+          if(tileObj.upgrade()) { 
+            player2.fans -= tileObj.getUpgradeFanCost(0);
+            tileObj.upgradeHealth();
+          }
+        } else if (key == '7' || keyCode == 98) {
+          player2.fans += tileObj.fanCost / 2;
+          world[(int)p.y][(int)p.x] = tileObj.backgroundTile.index;
+          worldTiles[(int)p.y][(int)p.x] = tileObj.backgroundTile;
         }
       }
     }
-      
-    setDanceFloor();
-    isBuildingState = true;
   }
   
   private void setDanceFloor() {
@@ -102,21 +201,6 @@ public class GameSceneMultiplayer extends Scene {
       }
   }
   
-  public void changeTile(int j, int k, int index) {
-    if(world[j][k] > 5) {
-      worldTiles[j][k].setBackgroundTile(index);
-    } else {
-      if (!(j >= 3 && j <= 6) || !(k == 0 || k == 19)) {
-        world[j][k] = index;
-        instantiate(j,k);
-      }
-    }
-  }
-
-  public void onSceneExit() {
-    Time.timeScale = 1;
-  }
-
   private void setupScene() {
     //initializing fans and health
     textAlign(LEFT);
@@ -150,7 +234,47 @@ public class GameSceneMultiplayer extends Scene {
     //dj tower 2
     image(Images.djStand2, 900, 170, 90, 280);
   }
-
+  
+  public void changeTile(int j, int k, int index) {
+    if(world[j][k] > 5) {
+      worldTiles[j][k].setBackgroundTile(index);
+    } else {
+      if (!(j >= 3 && j <= 6) || !(k == 0 || k == 19)) {
+        world[j][k] = index;
+        instantiate(j,k);
+      }
+    }
+  }
+  
+  private void instantiate(int i, int j) {
+    worldTiles[i][j] = tiles.get(world[i][j]).getInstance();
+    worldTiles[i][j].pos = tileToCorner(new PVector(j, i));
+  }
+  
+  private void instantiate(int i, int j, int index) {
+    worldTiles[i][j] = tiles.get(world[i][j]).getInstance(tiles.get(index));
+    PVector p = tileToCorner(new PVector(j, i));
+    worldTiles[i][j].pos = p;
+    worldTiles[i][j].backgroundTile.pos = p;
+  }
+  
+  private void setTile(PVector p, int num, boolean isPlayer1) {
+    Player player = (isPlayer1 ? player1 : player2);
+    
+    if(player.fans - tiles.get(num).fanCost >= 0) {
+      int i = world[(int)p.y][(int)p.x];
+      world[(int)p.y][(int)p.x] = num;
+      instantiate((int)p.y, (int)p.x, i);
+      player.fans -= tiles.get(num).fanCost;
+    }
+  }
+  
+  private void gameOver(boolean player1Lost) {
+   Time.timeScale = 0;
+   isGameOver = true;
+   player1Won = !player1Lost;
+  }
+  
   private void mapUpdate() {
     setupScene();
     beat.detect(currentMusic.mix);
@@ -168,16 +292,33 @@ public class GameSceneMultiplayer extends Scene {
     }
   }
   
-  private void instantiate(int i, int j) {
-    worldTiles[i][j] = tiles.get(world[i][j]).getInstance();
-    worldTiles[i][j].pos = tileToCorner(new PVector(j, i));
+  private void gameOverUpdate() {
+    fill(0);
+    textSize(80);
+    text("Game Over", 260, 200);
+    text("Player " + (player1Won ? "1" : "2") + " won", 240, 300);
+    text("Click to restart", 220, 400);
+    textSize(12);
   }
   
-  private void instantiate(int i, int j, int index) {
-    worldTiles[i][j] = tiles.get(world[i][j]).getInstance(tiles.get(index));
-    PVector p = tileToCorner(new PVector(j, i));
-    worldTiles[i][j].pos = p;
-    worldTiles[i][j].backgroundTile.pos = p;
+  private void attackUpdate() {
+    for (int i = player1.creeps.size() - 1; i >= 0; --i) {
+      creepLoop(true, i);
+    }
+
+    for (int i = player2.creeps.size() - 1; i >= 0; --i) {
+      creepLoop(false, i);
+    }
+    
+    for (int i = 0; i < worldRows; ++i)
+    {
+      for (int j = 0; j < worldCols; ++j) {
+        worldTiles[i][j].update(this, j < 10);
+      }   
+    }
+
+    if (player1.creeps.isEmpty() && player2.creeps.isEmpty())
+      isBuildingState = true;
   }
 
   private void buildingUpdate() {
@@ -212,41 +353,38 @@ public class GameSceneMultiplayer extends Scene {
       //#1
       text("1:", 30, 80);
       float halfHeight = tileHeight / 2;
+      tint(100, 200, 255);
       image(Images.creepNormal1, 60, 75 - halfHeight, tileWidth, tileHeight);
+      noTint();
       text((int)(player1.creepSpeedMultiplyer * 100) + "%", 110, 80);
       textSize(10);
       text(creepSpeedCost, 120, 105);
       textSize(12);
       //#2
       text("2:", 170, 80);
+      tint(100, 200, 255);
       image(Images.creepNormal1, 190, 75 - halfHeight, tileWidth, tileHeight);
+      text((int)(player1.creepHealthMultiplyer * 100) + "%", 255, 80);
       tint(220, 0, 0);
       image(Images.healthIcon, 223, 80);
       noTint();
-      text((int)(player1.creepHealthMultiplyer * 100) + "%", 255, 80);
       textSize(10);
       text(creepHealthCost, 260, 105);
       textSize(12);
       //#3
       text("3:", 310, 80);
+      tint(100, 200, 255);
       image(Images.creepNormal1, 330, 75 - halfHeight, tileWidth, tileHeight);
+      noTint();
       text((int)(player1.creepSpawnMultiplyer * 100) + "%", 395, 80);
       textSize(10);
       text(creepSpawnCost, 400, 105);
       textSize(12);
     } else {
       // display tower upgrade options
-      PImage img;
       TowerTile tileObj = (TowerTile) worldTiles[(int)p.y][(int)p.x];
-      switch(tile) {
-        case 6: img = Images.standardTower; break;
-        case 7: img = Images.bruiserTower; break;
-        case 8: img = Images.glacierTower; break;
-        case 9: img = Images.lightningTower; break;
-        default: img = Images.wall; break;
-      }
       
-      image(img, 30, 60, tileWidth, tileHeight);
+      image(tileObj.img, 30, 60, tileWidth, tileHeight);
       fill(255);
       if(tile == 10) {
         //info for current tower
@@ -276,13 +414,14 @@ public class GameSceneMultiplayer extends Scene {
         rect(135, 75, 25, 10);
         triangle(160, 70, 160, 90, 180, 80);
         text("1.", 195, 85);
-        image(img, 215, 60, tileWidth, tileHeight);
+        image(tileObj.img, 215, 60, tileWidth, tileHeight);
         if(tile == 10) {
           // info for upgraded tower
           image(Images.healthIcon, 268, 58);
           text(tileObj.upgrades[tileObj.upgradeIndex + 1].health + " (+" + (tileObj.upgrades[tileObj.upgradeIndex + 1].health - tileObj.health) + ")", 290, 70);
           //image(Images.healthIcon, 268, 88);
           text(tileObj.getUpgradeFanCost(1), 290, 100);
+          text("2.", 400, 50);
         } else {
           textSize(8);
           image(Images.healthIcon, 253, 47);
@@ -291,9 +430,10 @@ public class GameSceneMultiplayer extends Scene {
           text(tileObj.getDamage(1) + " (+" + (tileObj.getDamage(1) - tileObj.getDamage(0)) + ")", 275, 82);
           image(Images.fireSpeedIcon, 255, 97);
           text(fireSpeedConvert(tileObj.getFireSpeed(1)) + " (+" + (fireSpeedConvert(tileObj.getFireSpeed(1)) - fireSpeedConvert(tileObj.getFireSpeed(0))) + ")", 275, 107);
-          text(tileObj.getRange(1) + " (+" + (tileObj.getRange(1) - tileObj.getRange(0)) + ")", 360, 70);
-          text(tileObj.getUpgradeFanCost(1), 360, 95);
+          text(tileObj.getRange(1) + " (+" + (tileObj.getRange(1) - tileObj.getRange(0)) + ")", 345, 70);
+          text(tileObj.getUpgradeFanCost(1), 345, 95);
           textSize(12);
+          text("2.", 420, 50);
         }
       }
       noTint();
@@ -343,17 +483,9 @@ public class GameSceneMultiplayer extends Scene {
       textSize(12);
     } else {
       // display tower upgrade options
-      PImage img;
       TowerTile tileObj = (TowerTile) worldTiles[(int)p.y][(int)p.x];
-      switch(tile) {
-        case 6: img = Images.standardTower; break;
-        case 7: img = Images.bruiserTower; break;
-        case 8: img = Images.glacierTower; break;
-        case 9: img = Images.lightningTower; break;
-        default: img = Images.wall; break;
-      }
       
-      image(img, 570, 60, tileWidth, tileHeight);
+      image(tileObj.img, 570, 60, tileWidth, tileHeight);
       fill(255);
       if(tile == 10) {
         // info for current tower
@@ -383,12 +515,13 @@ public class GameSceneMultiplayer extends Scene {
         rect(685, 75, 25, 10);
         triangle(700, 70, 700, 90, 720, 80);
         text("1.", 735, 85);
-        image(img, 755, 60, tileWidth, tileHeight);
+        image(tileObj.img, 755, 60, tileWidth, tileHeight);
         if(tile == 10) {
           // info for upgraded tower
           image(Images.healthIcon, 808, 60);
           text(tileObj.upgrades[tileObj.upgradeIndex + 1].health + " (+" + (tileObj.upgrades[tileObj.upgradeIndex + 1].health - tileObj.health) + ")", 830, 70);
           text(tileObj.getUpgradeFanCost(1), 830, 100);
+          text("2.", 940, 50);
         } else {
           textSize(8);
           image(Images.healthIcon, 795, 47);
@@ -397,9 +530,10 @@ public class GameSceneMultiplayer extends Scene {
           text(tileObj.getDamage(1) + " (+" + (tileObj.getDamage(1) - tileObj.getDamage(0)) + ")", 815, 82);
           image(Images.fireSpeedIcon, 795, 97);
           text(fireSpeedConvert(tileObj.getFireSpeed(1)) + " (+" + (fireSpeedConvert(tileObj.getFireSpeed(1)) - fireSpeedConvert(tileObj.getFireSpeed(0))) + ")", 815, 107);
-          text(tileObj.getRange(1) + " (+" + (tileObj.getRange(1) - tileObj.getRange(0)) + ")", 900, 70);
-          text(tileObj.getUpgradeFanCost(1), 900, 95);
+          text(tileObj.getRange(1) + " (+" + (tileObj.getRange(1) - tileObj.getRange(0)) + ")", 885, 70);
+          text(tileObj.getUpgradeFanCost(1), 885, 95);
           textSize(12);
+          text("2.", 960, 50);
         }
       }
       noTint();
@@ -409,37 +543,7 @@ public class GameSceneMultiplayer extends Scene {
       startMiniGame();
     } else buildTimeLeft -= Time.deltaTime;
   }
-  
-  private void gameOverUpdate() {
-    fill(0);
-    textSize(80);
-    text("Game Over", 260, 200);
-    text("Player " + (player1Won ? "1" : "2") + " won", 240, 300);
-    text("Click to restart", 220, 400);
-    textSize(12);
-  }
-  
-  private void attackUpdate() {
-    for (int i = player1.creeps.size() - 1; i >= 0; --i) {
-      creepLoop(true, i);
-    }
-
-    for (int i = player2.creeps.size() - 1; i >= 0; --i) {
-      creepLoop(false, i);
-    }
-    
-    for (int i = 0; i < worldRows; ++i)
-    {
-      for (int j = 0; j < worldCols; ++j) {
-        worldTiles[i][j].update(this, j < 10);
-      }   
-    }
-
-    if (player1.creeps.isEmpty() && player2.creeps.isEmpty()) {
-      isBuildingState = true;
-    }
-  }
-  
+   
   public void creepLoop(boolean isPlayer1, int i) {
     Player player = (isPlayer1 ? player1 : player2);
     Player enemy = (isPlayer1 ? player2 : player1);
@@ -528,120 +632,5 @@ public class GameSceneMultiplayer extends Scene {
     for (int i = 0; i < player2.creeps.size(); ++i) {
       player2.creeps.get(i).findPath();
     }
-  }
-  
-  public void onMousePressed() {
-    if (isBuildingState) {
-      startMiniGame();
-    } else if (isGameOver) {
-      restart = true;
-    }
-  }
-
-  public void onKeyPressed() {
-    if (isMiniGame) {
-      miniGame.onKeyPressed();
-    } else if (isBuildingState) {
-      //player 1 movements + towers
-      PVector p = player1.selectedBuildTile;
-      int tile = world[(int)p.y][(int)p.x];
-      if((key == 'w' || key == 'W') && p.y > 0)
-        p.y--;
-      else if((key == 's' || key == 'S') && p.y < worldRows-1)
-        p.y++;
-      else if((key == 'a' || key == 'A') && p.x > 0)
-        p.x--;
-      else if((key == 'd' || key == 'D') && p.x < 8)
-        p.x++;
-      else if(tile < 5) {
-        if(keyCode == 49) setTile(p, 6, true);
-        else if(keyCode == 50) setTile(p, 7, true);
-        else if(keyCode == 51) setTile(p, 8, true);
-        else if(keyCode == 52) setTile(p, 9, true);
-        else if(keyCode == 53) setTile(p, 10, true);
-      } else if(tile == 5) {
-        if(keyCode == 49 && player1.fans - 100 >= 0 && player1.creepSpeedMultiplyer < 3.5f) {
-          player1.creepSpeedMultiplyer += .25f;
-          player1.fans -= creepSpeedCost;
-        } else if(keyCode == 50 && player1.fans - 75 >= 0) {
-          player1.creepHealthMultiplyer += .25f;
-          player1.fans -= creepHealthCost;
-        } else if(keyCode == 51 && player1.fans - 125 >= 0 && player1.creepSpawnMultiplyer < 2.0f) {
-          player1.creepSpawnMultiplyer += .2f;
-          player1.fans -= creepSpawnCost;
-        }
-      } else if(tile > 5) {
-        TowerTile tileObj = (TowerTile) worldTiles[(int)p.y][(int)p.x];
-        if(keyCode == 49 && player1.fans - tileObj.getUpgradeFanCost(1) >= 0) {
-          if(tileObj.upgrade()) { 
-            player1.fans -= tileObj.getUpgradeFanCost(0);
-            tileObj.upgradeHealth();
-          }
-        } else if (keyCode == 50) {
-          player1.fans += tileObj.fanCost / 2;
-          world[(int)p.y][(int)p.x] = tileObj.backgroundTile.index;
-          worldTiles[(int)p.y][(int)p.x] = tileObj.backgroundTile;
-        }
-      }
-        
-      // player 2 movements + towers
-      p = player2.selectedBuildTile;
-      tile = world[(int)p.y][(int)p.x];
-      if(keyCode == 38 && p.y > 0)
-        p.y--;
-      else if(keyCode == 40 && p.y < worldRows-1)
-        p.y++;
-      else if(keyCode == 37 && p.x > 11)
-        p.x--;
-      else if(keyCode == 39 && p.x < 19)
-        p.x++;
-      else if(tile < 5) {
-        if(key == '6' || keyCode == 97) setTile(p, 6, false);
-        else if(key == '7' || keyCode == 98) setTile(p, 7, false);
-        else if(key == '8' || keyCode == 99) setTile(p, 8, false);
-        else if(key == '9' || keyCode == 100) setTile(p, 9, false);
-        else if(key == '0' || keyCode == 101) setTile(p, 10, false);
-      } else if(tile == 5) {
-        if((key == '6' || keyCode == 97) && player2.fans - 100 >= 0 && player2.creepSpeedMultiplyer < 4) {
-          player2.creepSpeedMultiplyer += .25f;
-          player2.fans -= creepSpeedCost;
-        } else if((key == '7' || keyCode == 98) && player2.fans - 75 >= 0) {
-          player2.creepHealthMultiplyer += .25f;
-          player2.fans -= creepHealthCost;
-        } else if((key == '8' || keyCode == 99) && player2.fans - 125 >= 0 && player2.creepSpawnMultiplyer < 2.0f) {
-          player2.creepSpawnMultiplyer += .2f;
-          player2.fans -= creepSpawnCost;
-        }
-      } else if(tile > 5) {
-        TowerTile tileObj = (TowerTile) worldTiles[(int)p.y][(int)p.x];
-        if((key == '6' || keyCode == 97) && player1.fans - tileObj.getUpgradeFanCost(1) >= 0) {
-          if(tileObj.upgrade()) { 
-            player2.fans -= tileObj.getUpgradeFanCost(0);
-            tileObj.upgradeHealth();
-          }
-        } else if (key == '7' || keyCode == 98) {
-          player2.fans += tileObj.fanCost / 2;
-          world[(int)p.y][(int)p.x] = tileObj.backgroundTile.index;
-          worldTiles[(int)p.y][(int)p.x] = tileObj.backgroundTile;
-        }
-      }
-    }
-  }
-  
-  private void setTile(PVector p, int num, boolean isPlayer1) {
-    Player player = (isPlayer1 ? player1 : player2);
-    
-    if(player.fans - tiles.get(num).fanCost >= 0) {
-      int i = world[(int)p.y][(int)p.x];
-      world[(int)p.y][(int)p.x] = num;
-      instantiate((int)p.y, (int)p.x, i);
-      player.fans -= tiles.get(num).fanCost;
-    }
-  }
-  
-  private void gameOver(boolean player1Lost) {
-   Time.timeScale = 0;
-   isGameOver = true;
-   player1Won = !player1Lost;
   }
 }

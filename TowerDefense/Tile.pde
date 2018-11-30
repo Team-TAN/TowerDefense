@@ -6,15 +6,13 @@ public abstract class Tile {
   public int cost = 1;
   public int fanCost;
   public PVector pos;
+  public PImage img;
   
   public void update(GameSceneMultiplayer scene, boolean player1) {
   }
   
   public void display() {
-    colorMode(HSB);
-    fill(colorOfTile, 255, 255);
-    if(pos != null) rect(pos.x, pos.y, tileWidth, tileHeight);
-    colorMode(RGB);
+    image(img, pos.x, pos.y, tileWidth, tileHeight);
   }
   
   public Tile getInstance() { return null;}

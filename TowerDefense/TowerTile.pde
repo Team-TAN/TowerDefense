@@ -9,9 +9,10 @@ public class TowerTile extends Tile {
   private ArrayList<Creep> inRange = new ArrayList<Creep>();
   private float showProjectile = 0;
   
-  public TowerTile(UpgradeData[] upgrades, int cost, int fanCost, int index) {
+  public TowerTile(UpgradeData[] upgrades, int cost, int fanCost, int index, PImage img) {
     upgradeIndex = 0;
     this.upgrades = upgrades;
+    this.img = img;
     health = this.upgrades[0].health;
     timeLeftToShoot = 0;
     
@@ -20,7 +21,8 @@ public class TowerTile extends Tile {
     this.index = index;
   }
   
-  public void display(PImage img) {
+  @Override
+  public void display() {
     backgroundTile.display();
     image(img, pos.x, pos.y, tileWidth, tileHeight);
   }

@@ -1,3 +1,20 @@
+/* TODO:
+Art:
+  Icons - coins/fans, speed for creep upgrades, spawn time (little clock), range(maybe just a circle with a reticle in it), a red x to delete towers
+  UI - a better background for the ui, and around the dj stands
+  Other - projectile art (something like a lightning bolt, possibly different for each tower, would need to be able to be strechted up to 300 pixels and not look grainy).
+Music:
+  More mini game songs
+Code:
+  Possible do player select. Would need art assets for each player, would probably need greyscale images to tint for each player
+  Possibly have a game over scene, or just a prettier game over message when the game is over
+  Balance the Game
+Rhythm Game:
+  Revamp art, fade out volume near the end.
+Main Menu:
+  play button, instructions button, credits page for all the music
+*/
+
 import ddf.minim.*;
 import ddf.minim.analysis.*;
 import ddf.minim.effects.*;

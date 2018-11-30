@@ -1,10 +1,10 @@
 public class Creep {
   
   public PVector targetPos;
-  public Queue<PVector> path;
+  private Queue<PVector> path;
   public PVector nextTile;
   public PVector pos;
-  public PVector start;
+  private PVector start;
   public boolean isDead = false;
   
   public float health;
@@ -24,11 +24,10 @@ public class Creep {
   public Creep(boolean isPowered, boolean isPlayer1, float healthMult) {
     this.isPowered = isPowered;
     this.isPlayer1 = isPlayer1;
-    if(isPowered) {
+    if(isPowered)
       health = 125 * healthMult;
-    } else {
+    else
       health = 75 * healthMult;
-    }
   }
   
   public void update() {
@@ -38,23 +37,16 @@ public class Creep {
     
     if(isPlayer1) {
       tint(100, 200, 255);
-      if(isPowered) {
-        img = Images.creepUpgraded1;
-      } else {
-        img = Images.creepNormal1;
-      }
+      img = (isPowered ? Images.creepUpgraded1 : Images.creepNormal1);
     } else {
-      if(isPowered) {
-        img = Images.creepUpgraded2;
-      } else {
-        img = Images.creepNormal2;
-      }
+        img = (isPowered? Images.creepUpgraded2 : Images.creepNormal2);
     }
     
     if(isPowered)
       image(img, pos.x - tileWidth / 2, pos.y - tileHeight / 2 + sin(hoverCounter * hoverSpeed) * hoverHeight, tileWidth, tileHeight);
     else 
       image(img, pos.x - tileWidth / 2 + 2, 2 + pos.y - tileHeight / 2 + sin(hoverCounter * hoverSpeed) * hoverHeight, tileWidth - 4, tileHeight - 4);
+      
     noTint();
     if(nextTile != null) {
       if(tileToPoint(nextTile).equals(pos)) {
@@ -67,11 +59,9 @@ public class Creep {
           if(nextTile.equals(targetPos) || (nextTile.x == targetPos.x && nextTile.y > 2 && nextTile.y < 7)) {
             isDead = true;
             targetPos = nextTile.copy();
-          }
-          else
+          } else
             pos = tileToPoint(nextTile.copy());
-        }
-        else
+        } else
           pos.add(travel);
       }
     }

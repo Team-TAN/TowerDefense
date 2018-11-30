@@ -30,7 +30,7 @@ class UI {
     else 
       tint(255, 125);
       
-    image(Images.standardTower, sX, sY, tileWidth, tileHeight);
+    image(towers[0].img, sX, sY, tileWidth, tileHeight);
     //tower 1 stats
     textSize(8);
     image(Images.damageIcon, sX + tileWidth, sY - 3);
@@ -45,7 +45,7 @@ class UI {
     else
       tint(255, 125);
   
-    image(Images.bruiserTower, sX + w + 35, sY, tileWidth, tileHeight);
+    image(towers[1].img, sX + w + 35, sY, tileWidth, tileHeight);
     //tower 2 stats
     image(Images.damageIcon, sX + w + 35 + tileWidth, sY - 3);
     image(Images.healthIcon, sX + w + 35 + tileWidth, sY + 17);
@@ -59,7 +59,7 @@ class UI {
     else
       tint(255, 125);
     
-    image(Images.glacierTower, sX + w*2 + 70, sY, tileWidth, tileHeight);
+    image(towers[2].img, sX + w*2 + 70, sY, tileWidth, tileHeight);
     //tower 3 stats
     image(Images.damageIcon, sX + w * 2 + 70 + tileWidth, sY - 3);
     image(Images.healthIcon, sX + w * 2 + 70 + tileWidth, sY + 17);
@@ -73,7 +73,7 @@ class UI {
     else
       tint(255, 125);
     
-    image(Images.lightningTower, sX + w*3 + 105, sY, tileWidth, tileHeight);
+    image(towers[3].img, sX + w*3 + 105, sY, tileWidth, tileHeight);
     //tower 4 stats
     image(Images.damageIcon, sX + w * 3 + 105 + tileWidth, sY - 3);
     image(Images.healthIcon, sX + w * 3 + 105 + tileWidth, sY + 17);
@@ -87,7 +87,7 @@ class UI {
     else
       tint(255, 125);
     
-    image(Images.wall, sX + w*4 + 143, sY, tileWidth, tileHeight);
+    image(towers[4].img, sX + w*4 + 143, sY, tileWidth, tileHeight);
     //tower 5 stats
     image(Images.damageIcon, sX + w * 4 + 148 + tileWidth, sY - 3);
     image(Images.healthIcon, sX + w * 4 + 148 + tileWidth, sY + 17);
