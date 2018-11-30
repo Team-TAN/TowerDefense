@@ -12,7 +12,6 @@ public class GameSceneMultiplayer extends Scene {
   private boolean isMiniGame = false;
   private boolean isGameOver = false;
   private boolean player1Won;
-  private boolean restart = false;
   private final int healthBarLength = 50;
 
   private final float MAX_BUILD_TIME = 30;
@@ -45,7 +44,7 @@ public class GameSceneMultiplayer extends Scene {
   public Tile[][] worldTiles = new Tile[10][20];
 
   @Override
-  public Scene update() {
+  public void update() {
     if (isMiniGame) {
       miniGame.draw();
       if (rhythmTimeLeft <= 0)
@@ -55,13 +54,11 @@ public class GameSceneMultiplayer extends Scene {
       mapUpdate();
        if(isGameOver) {
         gameOverUpdate();
-        if(restart) return new GameSceneMultiplayer();
       } else if (isBuildingState)
         buildingUpdate();
       else 
         attackUpdate();
     }
-    return null;
   }
 
   @Override
@@ -89,7 +86,7 @@ public class GameSceneMultiplayer extends Scene {
     if (isBuildingState) {
       startMiniGame();
     } else if (isGameOver) {
-      restart = true;
+      changeScene(new GameSceneMultiplayer());
     }
   }
 
@@ -382,62 +379,9 @@ public class GameSceneMultiplayer extends Scene {
       textSize(12);
     } else {
       // display tower upgrade options
-      TowerTile tileObj = (TowerTile) worldTiles[(int)p.y][(int)p.x];
-      
-      image(tileObj.img, 30, 60, tileWidth, tileHeight);
-      fill(255);
-      if(tile == 10) {
-        //info for current tower
-        image(Images.healthIcon, 78, 73);
-        text(tileObj.health, 100, 85);
-      } else {
-        // info for current tower
-        textSize(8);
-        image(Images.healthIcon, 68, 42);
-        text(tileObj.health, 90, 52);
-        image(Images.damageIcon, 68, 62);
-        text(tileObj.getDamage(0), 90, 72);
-        image(Images.fireSpeedIcon, 68, 82);
-        text(fireSpeedConvert(tileObj.getFireSpeed(0)), 90, 92);
-        text(tileObj.getRange(0), 90, 112);
-        // radius around tower
-        tileObj.displayRadius();
-        textSize(12);
-      }
-      fill(255);
-      if(tileObj.upgradeIndex + 1 < tileObj.upgrades.length) {
-        if(player1.fans >= tileObj.getUpgradeFanCost(1))
-          tint(255, 255);
-        else
-          tint(255, 125);
-        noStroke();
-        rect(135, 75, 25, 10);
-        triangle(160, 70, 160, 90, 180, 80);
-        text("1.", 195, 85);
-        image(tileObj.img, 215, 60, tileWidth, tileHeight);
-        if(tile == 10) {
-          // info for upgraded tower
-          image(Images.healthIcon, 268, 58);
-          text(tileObj.upgrades[tileObj.upgradeIndex + 1].health + " (+" + (tileObj.upgrades[tileObj.upgradeIndex + 1].health - tileObj.health) + ")", 290, 70);
-          //image(Images.healthIcon, 268, 88);
-          text(tileObj.getUpgradeFanCost(1), 290, 100);
-          text("2.", 400, 50);
-        } else {
-          textSize(8);
-          image(Images.healthIcon, 253, 47);
-          text(tileObj.upgrades[tileObj.upgradeIndex + 1].health + " (+" + (tileObj.upgrades[tileObj.upgradeIndex + 1].health - tileObj.health) + ")", 275, 57);
-          image(Images.damageIcon, 255, 72);
-          text(tileObj.getDamage(1) + " (+" + (tileObj.getDamage(1) - tileObj.getDamage(0)) + ")", 275, 82);
-          image(Images.fireSpeedIcon, 255, 97);
-          text(fireSpeedConvert(tileObj.getFireSpeed(1)) + " (+" + (fireSpeedConvert(tileObj.getFireSpeed(1)) - fireSpeedConvert(tileObj.getFireSpeed(0))) + ")", 275, 107);
-          text(tileObj.getRange(1) + " (+" + (tileObj.getRange(1) - tileObj.getRange(0)) + ")", 345, 70);
-          text(tileObj.getUpgradeFanCost(1), 345, 95);
-          textSize(12);
-          text("2.", 420, 50);
-        }
-      }
+      displayUpgradeUI(player1, 30);
       noTint();
-    }
+    }    
     
     //highlighting player 2 selected tile
     p = player2.selectedBuildTile;
@@ -482,60 +426,7 @@ public class GameSceneMultiplayer extends Scene {
       text(creepHealthCost, 960, 105);
       textSize(12);
     } else {
-      // display tower upgrade options
-      TowerTile tileObj = (TowerTile) worldTiles[(int)p.y][(int)p.x];
-      
-      image(tileObj.img, 570, 60, tileWidth, tileHeight);
-      fill(255);
-      if(tile == 10) {
-        // info for current tower
-        image(Images.healthIcon, 618, 75);
-        text(tileObj.health, 640, 85);
-      } else {
-        // info for current tower
-        textSize(8);
-        image(Images.healthIcon, 608, 42);
-        text(tileObj.health, 630, 52);
-        image(Images.damageIcon, 608, 62);
-        text(tileObj.getDamage(0), 630, 72);
-        image(Images.fireSpeedIcon, 608, 82);
-        text(fireSpeedConvert(tileObj.getFireSpeed(0)), 630, 92);
-        text(tileObj.getRange(0), 630, 112);
-        // radius around tower
-        tileObj.displayRadius();
-        textSize(12);
-      }
-      fill(255);
-      if(tileObj.upgradeIndex + 1 < tileObj.upgrades.length) {
-        if(player2.fans >= tileObj.getUpgradeFanCost(1))
-          tint(255, 255);
-        else
-          tint(255, 125);
-        noStroke();
-        rect(685, 75, 25, 10);
-        triangle(700, 70, 700, 90, 720, 80);
-        text("1.", 735, 85);
-        image(tileObj.img, 755, 60, tileWidth, tileHeight);
-        if(tile == 10) {
-          // info for upgraded tower
-          image(Images.healthIcon, 808, 60);
-          text(tileObj.upgrades[tileObj.upgradeIndex + 1].health + " (+" + (tileObj.upgrades[tileObj.upgradeIndex + 1].health - tileObj.health) + ")", 830, 70);
-          text(tileObj.getUpgradeFanCost(1), 830, 100);
-          text("2.", 940, 50);
-        } else {
-          textSize(8);
-          image(Images.healthIcon, 795, 47);
-          text(tileObj.upgrades[tileObj.upgradeIndex + 1].health + " (+" + (tileObj.upgrades[tileObj.upgradeIndex + 1].health - tileObj.health) + ")", 815, 57);
-          image(Images.damageIcon, 795, 72);
-          text(tileObj.getDamage(1) + " (+" + (tileObj.getDamage(1) - tileObj.getDamage(0)) + ")", 815, 82);
-          image(Images.fireSpeedIcon, 795, 97);
-          text(fireSpeedConvert(tileObj.getFireSpeed(1)) + " (+" + (fireSpeedConvert(tileObj.getFireSpeed(1)) - fireSpeedConvert(tileObj.getFireSpeed(0))) + ")", 815, 107);
-          text(tileObj.getRange(1) + " (+" + (tileObj.getRange(1) - tileObj.getRange(0)) + ")", 885, 70);
-          text(tileObj.getUpgradeFanCost(1), 885, 95);
-          textSize(12);
-          text("2.", 960, 50);
-        }
-      }
+      displayUpgradeUI(player2, 570);
       noTint();
     }
     
@@ -543,8 +434,66 @@ public class GameSceneMultiplayer extends Scene {
       startMiniGame();
     } else buildTimeLeft -= Time.deltaTime;
   }
+  
+  private void displayUpgradeUI(Player player, int sX) { //sX = starting X coord
+    PVector p = player.selectedBuildTile;
+    TowerTile tileObj = (TowerTile) worldTiles[(int)p.y][(int)p.x];
+      
+    image(tileObj.img, sX, 60, tileWidth, tileHeight);
+    fill(255);
+    if(tileObj.index == 10) {
+      //info for current tower
+      image(Images.healthIcon, sX + 48, 73);
+      text(tileObj.health, sX + 70, 85);
+    } else {
+      // info for current tower
+      textSize(8);
+      image(Images.healthIcon, sX + 38, 42);
+      text(tileObj.health, sX + 60, 52);
+      image(Images.damageIcon, sX + 38, 62);
+      text(tileObj.getDamage(0), sX + 60, 72);
+      image(Images.fireSpeedIcon, sX + 38, 82);
+      text(fireSpeedConvert(tileObj.getFireSpeed(0)), sX + 60, 92);
+      text(tileObj.getRange(0), sX + 60, 112);
+      // radius around tower
+      tileObj.displayRadius();
+      textSize(12);
+    }
+    fill(255);
+    if(tileObj.upgradeIndex + 1 < tileObj.upgrades.length) {
+      if(player.fans >= tileObj.getUpgradeFanCost(1))
+        tint(255, 255);
+      else
+        tint(255, 125);
+      noStroke();
+      rect(sX + 105, 75, 25, 10);
+      triangle(sX + 130, 70, sX + 130, 90, sX + 150, 80);
+      text("1.", sX + 165, 85);
+      image(tileObj.img, sX + 185, 60, tileWidth, tileHeight);
+      if(tileObj.index == 10) {
+        // info for upgraded tower
+        image(Images.healthIcon, sX + 238, 58);
+        text(tileObj.upgrades[tileObj.upgradeIndex + 1].health + " (+" + (tileObj.upgrades[tileObj.upgradeIndex + 1].health - tileObj.health) + ")", sX + 260, 70);
+        //image(Images.healthIcon, 268, 88);
+        text(tileObj.getUpgradeFanCost(1), sX + 260, 100);
+        text("2.", sX + 370, 50);
+      } else {
+        textSize(8);
+        image(Images.healthIcon, sX + 223, 47);
+        text(tileObj.upgrades[tileObj.upgradeIndex + 1].health + " (+" + (tileObj.upgrades[tileObj.upgradeIndex + 1].health - tileObj.health) + ")", sX + 245, 57);
+        image(Images.damageIcon, sX + 225, 72);
+        text(tileObj.getDamage(1) + " (+" + (tileObj.getDamage(1) - tileObj.getDamage(0)) + ")", sX + 245, 82);
+        image(Images.fireSpeedIcon, sX + 225, 97);
+        text(fireSpeedConvert(tileObj.getFireSpeed(1)) + " (+" + (fireSpeedConvert(tileObj.getFireSpeed(1)) - fireSpeedConvert(tileObj.getFireSpeed(0))) + ")", sX + 245, 107);
+        text(tileObj.getRange(1) + " (+" + (tileObj.getRange(1) - tileObj.getRange(0)) + ")", sX + 315, 70);
+        text(tileObj.getUpgradeFanCost(1), sX + 315, 95);
+        textSize(12);
+        text("2.", sX + 390, 50);
+      }
+    }
+  }
    
-  public void creepLoop(boolean isPlayer1, int i) {
+  private void creepLoop(boolean isPlayer1, int i) {
     Player player = (isPlayer1 ? player1 : player2);
     Player enemy = (isPlayer1 ? player2 : player1);
     Creep c = player.creeps.get(i);

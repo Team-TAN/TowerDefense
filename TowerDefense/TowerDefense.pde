@@ -72,14 +72,7 @@ void draw() {
     currentMusic = backgroundMusic[currentMusicIndex];
     currentMusic.play();
   }
-  
-  Scene newScene = scene.update();
-  if(newScene != null) {
-    scene.onSceneExit();
-    scene = newScene;
-    scene.onSceneEnter();
-    Time.newScene();
-  }
+  scene.update();
 }
 
 void mousePressed() {
@@ -110,9 +103,6 @@ private void initMusic() {
   miniGameSongs = new AudioPlayer[]{ minim.loadFile("MGM-A_Meeting_of_Genres.mp3"), minim.loadFile("MGM-Funky_Love_Disco_Pump.mp3"), minim.loadFile("MGM-Party_in_the_Jungle.mp3") };
   miniGameSongsDummy = new AudioPlayer[]{ minim.loadFile("MGM-A_Meeting_of_Genres.mp3"), minim.loadFile("MGM-Funky_Love_Disco_Pump.mp3"), minim.loadFile("MGM-Party_in_the_Jungle.mp3") };
   backgroundMusic = new AudioPlayer[] { minim.loadFile("backgroundMusic1.mp3"), minim.loadFile("backgroundMusic2.mp3"), minim.loadFile("BGM-Disco_Attempt_1.mp3")};
-  /*backgroundMusic[0] = minim.loadFile("backgroundMusic1.mp3");
-  backgroundMusic[1] = minim.loadFile("backgroundMusic2.mp3");
-  backgroundMusic[1] = minim.loadFile("BGM-Disco_Attempt_1.mp3");*/
   currentMusicIndex = (int) random(0, backgroundMusic.length);
   currentMusic = backgroundMusic[currentMusicIndex];
   currentMusic.play();
@@ -144,4 +134,11 @@ private void initImages() {
   Images.damageIcon = loadImage("stat_icons_damage.png");
   Images.healthIcon = loadImage("stat_icons_health.png");
   Images.fireSpeedIcon = loadImage("stat_icons_firerate.png");
+}
+
+void changeScene(Scene newScene) {
+  scene.onSceneExit();
+  scene = newScene;
+  scene.onSceneEnter();
+  Time.newScene();
 }

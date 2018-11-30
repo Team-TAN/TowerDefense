@@ -1,6 +1,6 @@
 public abstract class Scene {
   
-  public abstract Scene update();
+  public abstract void update();
   
   public abstract void onSceneEnter();
   public abstract void onSceneExit();

@@ -1,12 +1,7 @@
 public class MainMenu extends Scene {
   
-  private boolean moveToPlay = false;
-  
-  public Scene update() {
-    if(moveToPlay)
-      return new GameSceneMultiplayer();
+  public void update() {
       
-    return null;
   }
   
   public void onSceneEnter() {//start music
@@ -15,7 +10,7 @@ public class MainMenu extends Scene {
   }
   
   public void onMousePressed() {
-    moveToPlay = true;
+    changeScene(new GameSceneMultiplayer());
   }
   
   public void onKeyPressed() {}

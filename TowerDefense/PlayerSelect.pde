@@ -1,6 +1,5 @@
 public class PlayerSelect extends Scene {
-  public Scene update() {
-     return null; 
+  public void update() {
   }
   
   public void onSceneEnter() {}
