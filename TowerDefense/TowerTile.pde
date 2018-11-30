@@ -7,6 +7,7 @@ public class TowerTile extends Tile {
   
   private Creep target;
   private ArrayList<Creep> inRange = new ArrayList<Creep>();
+  private float showProjectile = 0;
   
   public TowerTile(UpgradeData[] upgrades, int cost, int fanCost, int index) {
     upgradeIndex = 0;
@@ -25,7 +26,7 @@ public class TowerTile extends Tile {
   }
   
   public void displayRadius() {
-    fill(255, 255, 255, 30);
+    fill(255, 255, 255, 50);
     noStroke();
     ellipse(pos.x + tileWidth / 2, pos.y + tileHeight / 2, getRange(0) * 2, getRange(0) * 2);
   }
@@ -46,8 +47,25 @@ public class TowerTile extends Tile {
       timeLeftToShoot -= Time.deltaTime;
       if(timeLeftToShoot <= 0) {
         target.health -= getDamage(0);
-        ellipse(pos.x, pos.y, 20, 20);
+        // do projectile animation
+        float px = pos.x + tileWidth / 2;
+        float py = pos.y + tileHeight / 2;
+        showProjectile = .05f;
+        pushMatrix();
+        translate(px, py);
+        rotate(atan2(target.pos.y - py, target.pos.x - px));     
+        rect(0, -7.5, PVector.sub(new PVector(px, py), target.pos).mag(), 15);
+        popMatrix();
         timeLeftToShoot = getFireSpeed(0);
+      } else if(showProjectile > 0) {
+        showProjectile -= Time.deltaTime;
+        float px = pos.x + tileWidth / 2;
+        float py = pos.y + tileHeight / 2;
+        pushMatrix();
+        translate(px, py);
+        rotate(atan2(target.pos.y - py, target.pos.x - px));     
+        rect(0, -7.5, PVector.sub(new PVector(px, py), target.pos).mag(), 15);
+        popMatrix();
       }
     }
   }

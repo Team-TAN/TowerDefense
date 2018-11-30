@@ -9,11 +9,12 @@ import java.util.LinkedList;
 
 
 HashMap<Integer, Tile> tiles = new HashMap<Integer, Tile>();
-String[] songs;
+AudioPlayer[] miniGameSongs;// = new AudioPlayer[3];
+AudioPlayer[] miniGameSongsDummy;
 Scene scene;
-AudioPlayer backgroundMusic1;
-AudioPlayer backgroundMusic2;
+AudioPlayer[] backgroundMusic;// = new AudioPlayer[3];
 AudioPlayer currentMusic;
+int currentMusicIndex = 0;
 boolean musicPaused = false;
 BeatDetect beat;
 Minim minim;
@@ -29,14 +30,8 @@ final int GRID_START_Y = 120;
 
 void setup() {
   size(1000, 500);
+  initMusic();
   initImages();
-  minim = new Minim(this);
-  beat = new BeatDetect();
-  songs = new String[]{ "song.mp3", "Dragonforce - Through the Fire and Flames(Lyrics).mp3"};
-  backgroundMusic1 = minim.loadFile("backgroundMusic1.mp3");
-  backgroundMusic2 = minim.loadFile("backgroundMusic2.mp3");
-  currentMusic = backgroundMusic1;
-  currentMusic.play();
   tiles.put(0, new RedTile());
   tiles.put(1, new OrangeTile());
   tiles.put(2, new YellowTile());
@@ -46,7 +41,7 @@ void setup() {
   tiles.put(8, new GlacierTower());
   tiles.put(9, new LightningTower());
   tiles.put(10, new WallTower());
-  scene = new GameSceneMultiplayer();
+  scene = new MainMenu();
   scene.onSceneEnter();
 }
 
@@ -55,7 +50,9 @@ void draw() {
   Time.update(millis());
   
   if(!currentMusic.isPlaying() && !musicPaused) {
-    currentMusic = (currentMusic.equals(backgroundMusic1) ? backgroundMusic2 : backgroundMusic1);
+    currentMusic.rewind();
+    currentMusicIndex = (currentMusicIndex + 1) % backgroundMusic.length;
+    currentMusic = backgroundMusic[currentMusicIndex];
     currentMusic.play();
   }
   
@@ -90,6 +87,20 @@ int fireSpeedConvert(float fireSpeed) {
   return (int)(1 / (fireSpeed * 4) * 100);
 }
 
+private void initMusic() {
+  minim = new Minim(this);
+  beat = new BeatDetect();
+  miniGameSongs = new AudioPlayer[]{ minim.loadFile("MGM-A_Meeting_of_Genres.mp3"), minim.loadFile("MGM-Funky_Love_Disco_Pump.mp3"), minim.loadFile("MGM-Party_in_the_Jungle.mp3") };
+  miniGameSongsDummy = new AudioPlayer[]{ minim.loadFile("MGM-A_Meeting_of_Genres.mp3"), minim.loadFile("MGM-Funky_Love_Disco_Pump.mp3"), minim.loadFile("MGM-Party_in_the_Jungle.mp3") };
+  backgroundMusic = new AudioPlayer[] { minim.loadFile("backgroundMusic1.mp3"), minim.loadFile("backgroundMusic2.mp3"), minim.loadFile("BGM-Disco_Attempt_1.mp3")};
+  /*backgroundMusic[0] = minim.loadFile("backgroundMusic1.mp3");
+  backgroundMusic[1] = minim.loadFile("backgroundMusic2.mp3");
+  backgroundMusic[1] = minim.loadFile("BGM-Disco_Attempt_1.mp3");*/
+  currentMusicIndex = (int) random(0, backgroundMusic.length);
+  currentMusic = backgroundMusic[currentMusicIndex];
+  currentMusic.play();
+}
+
 private void initImages() {
   Images.standardTower = loadImage("tower_1_standard.png");
   Images.bruiserTower = loadImage("tower_2_bruiser.png");
@@ -109,4 +120,11 @@ private void initImages() {
   Images.yellowTile = loadImage("floor_tiles_yellow.png");
   Images.redTile = loadImage("floor_tiles_red.png");
   Images.spawnTile = loadImage("floor_tiles_purple.png");
+  
+  Images.healthbar = loadImage("health_bar.png");
+  Images.healthbarBackground = loadImage("health_bar_empty.png");
+  
+  Images.damageIcon = loadImage("stat_icons_damage.png");
+  Images.healthIcon = loadImage("stat_icons_health.png");
+  Images.fireSpeedIcon = loadImage("stat_icons_firerate.png");
 }

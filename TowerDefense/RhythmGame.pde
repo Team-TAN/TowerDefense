@@ -45,8 +45,8 @@ class RhythmGame {
     this.length = length * 1000;
     this.creepHealthMult = creepHealthMult;
     
-    player = minim.loadFile(songs[songIndex]);
-    dummy = minim.loadFile(songs[songIndex]);
+    player = miniGameSongs[songIndex];
+    dummy = miniGameSongsDummy[songIndex];
     
     beat = new BeatDetect(dummy.bufferSize(), dummy.sampleRate());
     beat.setSensitivity(1000);

@@ -13,7 +13,7 @@ public class GameSceneMultiplayer extends Scene {
   private boolean isGameOver = false;
   private boolean player1Won;
   private boolean restart = false;
-  private final int healthBarLength = 100;
+  private final int healthBarLength = 50;
 
   private final float MAX_BUILD_TIME = 30;
   private float buildTimeLeft = MAX_BUILD_TIME;
@@ -25,6 +25,9 @@ public class GameSceneMultiplayer extends Scene {
   private int beats = 0;
   private int turns = 0;
   private float creepHealthMult = 1;
+  private int creepSpeedCost = 100;
+  private int creepHealthCost = 75;
+  private int creepSpawnCost = 125;
 
   private int[][] world = {
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
@@ -127,11 +130,11 @@ public class GameSceneMultiplayer extends Scene {
     //enemy text
     text("Enemy: ", 750, 25);
     //player 1 health bar
-    fill(0, 200, 0);
-    rect(100, 10, healthBarLength * player1.healthPercent(), 25);
+    image(Images.healthbarBackground, 78, 12, healthBarLength + 2, 20);
+    image(Images.healthbar, 79, 13, healthBarLength * player1.healthPercent(), 18);
     //enemy health bar
-    fill(0, 200, 0);
-    rect(825, 10, healthBarLength * player2.healthPercent(), 25);
+    image(Images.healthbarBackground, 806, 12, healthBarLength + 2, 20);
+    image(Images.healthbar, 807, 13, healthBarLength * player2.healthPercent(), 18);
     //fan icon placeholder
     fill(0, 255, 255);
     rect(250, 10, 40, 20);
@@ -141,7 +144,9 @@ public class GameSceneMultiplayer extends Scene {
     text(player1.fans, 310, 25); // p1
     text(player2.fans, 670, 25); //p2
     //dj tower 1
+    tint(100, 200, 255);
     image(Images.djStand1, 10, 170, 90, 280);
+    noTint();
     //dj tower 2
     image(Images.djStand2, 900, 170, 90, 280);
   }
@@ -209,14 +214,26 @@ public class GameSceneMultiplayer extends Scene {
       float halfHeight = tileHeight / 2;
       image(Images.creepNormal1, 60, 75 - halfHeight, tileWidth, tileHeight);
       text((int)(player1.creepSpeedMultiplyer * 100) + "%", 110, 80);
+      textSize(10);
+      text(creepSpeedCost, 120, 105);
+      textSize(12);
       //#2
       text("2:", 170, 80);
       image(Images.creepNormal1, 190, 75 - halfHeight, tileWidth, tileHeight);
+      tint(220, 0, 0);
+      image(Images.healthIcon, 223, 80);
+      noTint();
       text((int)(player1.creepHealthMultiplyer * 100) + "%", 255, 80);
+      textSize(10);
+      text(creepHealthCost, 260, 105);
+      textSize(12);
       //#3
       text("3:", 310, 80);
       image(Images.creepNormal1, 330, 75 - halfHeight, tileWidth, tileHeight);
       text((int)(player1.creepSpawnMultiplyer * 100) + "%", 395, 80);
+      textSize(10);
+      text(creepSpawnCost, 400, 105);
+      textSize(12);
     } else {
       // display tower upgrade options
       PImage img;
@@ -233,12 +250,16 @@ public class GameSceneMultiplayer extends Scene {
       fill(255);
       if(tile == 10) {
         //info for current tower
+        image(Images.healthIcon, 78, 73);
         text(tileObj.health, 100, 85);
       } else {
         // info for current tower
         textSize(8);
+        image(Images.healthIcon, 68, 42);
         text(tileObj.health, 90, 52);
+        image(Images.damageIcon, 68, 62);
         text(tileObj.getDamage(0), 90, 72);
+        image(Images.fireSpeedIcon, 68, 82);
         text(fireSpeedConvert(tileObj.getFireSpeed(0)), 90, 92);
         text(tileObj.getRange(0), 90, 112);
         // radius around tower
@@ -247,6 +268,10 @@ public class GameSceneMultiplayer extends Scene {
       }
       fill(255);
       if(tileObj.upgradeIndex + 1 < tileObj.upgrades.length) {
+        if(player1.fans >= tileObj.getUpgradeFanCost(1))
+          tint(255, 255);
+        else
+          tint(255, 125);
         noStroke();
         rect(135, 75, 25, 10);
         triangle(160, 70, 160, 90, 180, 80);
@@ -254,18 +279,24 @@ public class GameSceneMultiplayer extends Scene {
         image(img, 215, 60, tileWidth, tileHeight);
         if(tile == 10) {
           // info for upgraded tower
+          image(Images.healthIcon, 268, 58);
           text(tileObj.upgrades[tileObj.upgradeIndex + 1].health + " (+" + (tileObj.upgrades[tileObj.upgradeIndex + 1].health - tileObj.health) + ")", 290, 70);
+          //image(Images.healthIcon, 268, 88);
           text(tileObj.getUpgradeFanCost(1), 290, 100);
         } else {
           textSize(8);
+          image(Images.healthIcon, 253, 47);
           text(tileObj.upgrades[tileObj.upgradeIndex + 1].health + " (+" + (tileObj.upgrades[tileObj.upgradeIndex + 1].health - tileObj.health) + ")", 275, 57);
+          image(Images.damageIcon, 255, 72);
           text(tileObj.getDamage(1) + " (+" + (tileObj.getDamage(1) - tileObj.getDamage(0)) + ")", 275, 82);
+          image(Images.fireSpeedIcon, 255, 97);
           text(fireSpeedConvert(tileObj.getFireSpeed(1)) + " (+" + (fireSpeedConvert(tileObj.getFireSpeed(1)) - fireSpeedConvert(tileObj.getFireSpeed(0))) + ")", 275, 107);
           text(tileObj.getRange(1) + " (+" + (tileObj.getRange(1) - tileObj.getRange(0)) + ")", 360, 70);
           text(tileObj.getUpgradeFanCost(1), 360, 95);
           textSize(12);
         }
       }
+      noTint();
     }
     
     //highlighting player 2 selected tile
@@ -288,16 +319,28 @@ public class GameSceneMultiplayer extends Scene {
       //#1
       text("1:", 570, 80);
       float halfHeight = tileHeight / 2;
-      image(Images.creepNormal2, 600, 75 - halfHeight, tileWidth, tileHeight);
-      text((int)(player2.creepSpeedMultiplyer * 100) + "%", 650, 80);
+      image(Images.creepNormal2, 590, 75 - halfHeight, tileWidth, tileHeight);
+      text((int)(player2.creepSpeedMultiplyer * 100) + "%", 655, 80);
+      textSize(10);
+      text(creepSpeedCost, 660, 105);
+      textSize(12);
       //#2
       text("2:", 710, 80);
-      image(Images.creepNormal2, 730, 75 - halfHeight, tileWidth, tileHeight);
+      image(Images.creepNormal2, 745, 75 - halfHeight, tileWidth, tileHeight);
+      tint(220, 0, 0);
+      image(Images.healthIcon, 735, 80);
+      noTint();
       text((int)(player2.creepHealthMultiplyer * 100) + "%", 795, 80);
+      textSize(10);
+      text(creepHealthCost, 810, 105);
+      textSize(12);
       //#3
       text("3:", 850, 80);
-      image(Images.creepNormal2, 870, 75 - halfHeight, tileWidth, tileHeight);
+      image(Images.creepNormal2, 885, 75 - halfHeight, tileWidth, tileHeight);
       text((int)(player2.creepSpawnMultiplyer * 100) + "%", 945, 80);
+      textSize(10);
+      text(creepHealthCost, 960, 105);
+      textSize(12);
     } else {
       // display tower upgrade options
       PImage img;
@@ -314,12 +357,16 @@ public class GameSceneMultiplayer extends Scene {
       fill(255);
       if(tile == 10) {
         // info for current tower
+        image(Images.healthIcon, 618, 75);
         text(tileObj.health, 640, 85);
       } else {
         // info for current tower
         textSize(8);
+        image(Images.healthIcon, 608, 42);
         text(tileObj.health, 630, 52);
+        image(Images.damageIcon, 608, 62);
         text(tileObj.getDamage(0), 630, 72);
+        image(Images.fireSpeedIcon, 608, 82);
         text(fireSpeedConvert(tileObj.getFireSpeed(0)), 630, 92);
         text(tileObj.getRange(0), 630, 112);
         // radius around tower
@@ -328,6 +375,10 @@ public class GameSceneMultiplayer extends Scene {
       }
       fill(255);
       if(tileObj.upgradeIndex + 1 < tileObj.upgrades.length) {
+        if(player2.fans >= tileObj.getUpgradeFanCost(1))
+          tint(255, 255);
+        else
+          tint(255, 125);
         noStroke();
         rect(685, 75, 25, 10);
         triangle(700, 70, 700, 90, 720, 80);
@@ -335,18 +386,23 @@ public class GameSceneMultiplayer extends Scene {
         image(img, 755, 60, tileWidth, tileHeight);
         if(tile == 10) {
           // info for upgraded tower
+          image(Images.healthIcon, 808, 60);
           text(tileObj.upgrades[tileObj.upgradeIndex + 1].health + " (+" + (tileObj.upgrades[tileObj.upgradeIndex + 1].health - tileObj.health) + ")", 830, 70);
           text(tileObj.getUpgradeFanCost(1), 830, 100);
         } else {
           textSize(8);
+          image(Images.healthIcon, 795, 47);
           text(tileObj.upgrades[tileObj.upgradeIndex + 1].health + " (+" + (tileObj.upgrades[tileObj.upgradeIndex + 1].health - tileObj.health) + ")", 815, 57);
+          image(Images.damageIcon, 795, 72);
           text(tileObj.getDamage(1) + " (+" + (tileObj.getDamage(1) - tileObj.getDamage(0)) + ")", 815, 82);
+          image(Images.fireSpeedIcon, 795, 97);
           text(fireSpeedConvert(tileObj.getFireSpeed(1)) + " (+" + (fireSpeedConvert(tileObj.getFireSpeed(1)) - fireSpeedConvert(tileObj.getFireSpeed(0))) + ")", 815, 107);
           text(tileObj.getRange(1) + " (+" + (tileObj.getRange(1) - tileObj.getRange(0)) + ")", 900, 70);
           text(tileObj.getUpgradeFanCost(1), 900, 95);
           textSize(12);
         }
       }
+      noTint();
     }
     
     if (buildTimeLeft <= 0) {
@@ -424,7 +480,7 @@ public class GameSceneMultiplayer extends Scene {
     isBuildingState = false;
     buildTimeLeft = MAX_BUILD_TIME;
     isMiniGame = true;
-    miniGame = new RhythmGame(player1, player2, 0, maxRhythmTime, creepHealthMult);
+    miniGame = new RhythmGame(player1, player2, (int) random(0, miniGameSongs.length), maxRhythmTime, creepHealthMult);
     maxRhythmTime += 3;
     turns++;
     if(turns % 3 == 0) {
@@ -489,39 +545,39 @@ public class GameSceneMultiplayer extends Scene {
       //player 1 movements + towers
       PVector p = player1.selectedBuildTile;
       int tile = world[(int)p.y][(int)p.x];
-      if(key == 'w' && p.y > 0)
+      if((key == 'w' || key == 'W') && p.y > 0)
         p.y--;
-      else if(key == 's' && p.y < worldRows-1)
+      else if((key == 's' || key == 'S') && p.y < worldRows-1)
         p.y++;
-      else if(key == 'a' && p.x > 0)
+      else if((key == 'a' || key == 'A') && p.x > 0)
         p.x--;
-      else if(key == 'd' && p.x < 8)
+      else if((key == 'd' || key == 'D') && p.x < 8)
         p.x++;
       else if(tile < 5) {
-        if(key == '1') setTile(p, 6, true);
-        else if(key == '2') setTile(p, 7, true);
-        else if(key == '3') setTile(p, 8, true);
-        else if(key == '4') setTile(p, 9, true);
-        else if(key == '5') setTile(p, 10, true);
+        if(keyCode == 49) setTile(p, 6, true);
+        else if(keyCode == 50) setTile(p, 7, true);
+        else if(keyCode == 51) setTile(p, 8, true);
+        else if(keyCode == 52) setTile(p, 9, true);
+        else if(keyCode == 53) setTile(p, 10, true);
       } else if(tile == 5) {
-        if(key == '1' && player1.fans - 100 >= 0 && player1.creepSpeedMultiplyer < 3.5f) {
+        if(keyCode == 49 && player1.fans - 100 >= 0 && player1.creepSpeedMultiplyer < 3.5f) {
           player1.creepSpeedMultiplyer += .25f;
-          player1.fans -= 100;
-        } else if(key == '2' && player1.fans - 75 >= 0) {
+          player1.fans -= creepSpeedCost;
+        } else if(keyCode == 50 && player1.fans - 75 >= 0) {
           player1.creepHealthMultiplyer += .25f;
-          player1.fans -= 75;
-        } else if(key == '3' && player1.fans - 125 >= 0 && player1.creepSpawnMultiplyer < 2.0f) {
+          player1.fans -= creepHealthCost;
+        } else if(keyCode == 51 && player1.fans - 125 >= 0 && player1.creepSpawnMultiplyer < 2.0f) {
           player1.creepSpawnMultiplyer += .2f;
-          player1.fans -= 125;
+          player1.fans -= creepSpawnCost;
         }
       } else if(tile > 5) {
         TowerTile tileObj = (TowerTile) worldTiles[(int)p.y][(int)p.x];
-        if(key == '1' && player1.fans - tileObj.getUpgradeFanCost(1) >= 0) {
+        if(keyCode == 49 && player1.fans - tileObj.getUpgradeFanCost(1) >= 0) {
           if(tileObj.upgrade()) { 
             player1.fans -= tileObj.getUpgradeFanCost(0);
             tileObj.upgradeHealth();
           }
-        } else if (key == '2') {
+        } else if (keyCode == 50) {
           player1.fans += tileObj.fanCost / 2;
           world[(int)p.y][(int)p.x] = tileObj.backgroundTile.index;
           worldTiles[(int)p.y][(int)p.x] = tileObj.backgroundTile;
@@ -548,13 +604,13 @@ public class GameSceneMultiplayer extends Scene {
       } else if(tile == 5) {
         if((key == '6' || keyCode == 97) && player2.fans - 100 >= 0 && player2.creepSpeedMultiplyer < 4) {
           player2.creepSpeedMultiplyer += .25f;
-          player2.fans -= 100;
+          player2.fans -= creepSpeedCost;
         } else if((key == '7' || keyCode == 98) && player2.fans - 75 >= 0) {
           player2.creepHealthMultiplyer += .25f;
-          player2.fans -= 75;
+          player2.fans -= creepHealthCost;
         } else if((key == '8' || keyCode == 99) && player2.fans - 125 >= 0 && player2.creepSpawnMultiplyer < 2.0f) {
           player2.creepSpawnMultiplyer += .2f;
-          player2.fans -= 125;
+          player2.fans -= creepSpawnCost;
         }
       } else if(tile > 5) {
         TowerTile tileObj = (TowerTile) worldTiles[(int)p.y][(int)p.x];

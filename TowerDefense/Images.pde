@@ -18,4 +18,11 @@ public static class Images {
   public static PImage yellowTile;
   public static PImage redTile;
   public static PImage spawnTile;
+  
+  public static PImage healthbar;
+  public static PImage healthbarBackground;
+  
+  public static PImage damageIcon;
+  public static PImage healthIcon;
+  public static PImage fireSpeedIcon;
 }
