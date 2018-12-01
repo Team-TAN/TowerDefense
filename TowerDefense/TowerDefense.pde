@@ -6,7 +6,7 @@ Art:
 Music:
   More mini game songs
 Code:
-  Possible do player select. Would need art assets for each player, would probably need greyscale images to tint for each player
+  Possibly do player select. Would need art assets for each player, would probably need greyscale images to tint for each player
   Possibly have a game over scene, or just a prettier game over message when the game is over
   Balance the Game
 Rhythm Game:

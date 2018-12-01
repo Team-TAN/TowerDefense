@@ -86,7 +86,11 @@ public class GameSceneMultiplayer extends Scene {
     if (isBuildingState) {
       startMiniGame();
     } else if (isGameOver) {
-      changeScene(new GameSceneMultiplayer());
+      if(mouseX >= 260 && mouseX <= 500 && mouseY >= 350 - tileHeight * 2 && mouseY <= 350) {
+        changeScene(new MainMenu());
+      } else if(mouseX > 500 && mouseX <= 740 && mouseY >= 350 - tileHeight * 2 && mouseY <= 350) {
+        changeScene(new GameSceneMultiplayer());
+    }
     }
   }
 
@@ -290,11 +294,25 @@ public class GameSceneMultiplayer extends Scene {
   }
   
   private void gameOverUpdate() {
+    fill(80, 100);
+    rect(260, 150, 480, 200);
+    if(mouseX >= 260 && mouseX <= 500 && mouseY >= 350 - tileHeight * 2 && mouseY <= 350) {
+      fill(0, 255, 50, 120);
+      rect(260, 350 - tileHeight * 2, 240, tileHeight * 2);
+    } else if(mouseX > 500 && mouseX <= 740 && mouseY >= 350 - tileHeight * 2 && mouseY <= 350) {
+      fill(0, 255, 50, 120);
+      rect(500, 350 - tileHeight * 2, 240, tileHeight * 2);
+    }
     fill(0);
-    textSize(80);
-    text("Game Over", 260, 200);
-    text("Player " + (player1Won ? "1" : "2") + " won", 240, 300);
-    text("Click to restart", 220, 400);
+    textSize(50);
+    textAlign(CENTER);
+    text("Game Over", 500, 200);
+    text("Player " + (player1Won ? "1" : "2") + " won", 500, 260);
+    //text("Click to restart", 500, 320);
+    textAlign(LEFT);
+    textSize(40);
+    text("Main Menu", 275, 320);
+    text("Restart", 550, 320);
     textSize(12);
   }
   
