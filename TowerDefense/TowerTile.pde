@@ -34,9 +34,9 @@ public class TowerTile extends Tile {
   }
   
   @Override
-  public void update(GameSceneMultiplayer scene, boolean player1) {
+  public void update(Player enemy) {
     inRange.clear();
-    ArrayList<Creep> creeps = (player1 ? scene.player2.creeps : scene.player1.creeps);
+    ArrayList<Creep> creeps = enemy.creeps;
     
     for(int i = 0; i < creeps.size(); ++i) {
       Creep c = creeps.get(i);
@@ -64,8 +64,9 @@ public class TowerTile extends Tile {
     float py = pos.y + tileHeight / 2;
     pushMatrix();
     translate(px, py);
-    rotate(atan2(target.pos.y - py, target.pos.x - px));     
-    rect(0, -7.5, PVector.sub(new PVector(px, py), target.pos).mag(), 15);
+    rotate(atan2(target.pos.y - py, target.pos.x - px));  
+    image(Images.towerAttack, 0, -7.5, PVector.sub(new PVector(px, py), target.pos).mag(), 15);
+    //rect(0, -7.5, PVector.sub(new PVector(px, py), target.pos).mag(), 15);
     popMatrix();
   }
   

@@ -95,6 +95,8 @@ class RhythmGame {
     text("GOOD: " + good2, 990, 15 );
     text("PERFECT: " + perfect2, 990, 30);     
     text("MISS: "+ miss2, 990, 45);
+    textAlign(LEFT);
+    textSize(12);
   
     for (int i = 0; i <= particles.size() - 1; i++) {
       Particle p = particles.get(i);

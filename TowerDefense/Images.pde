@@ -25,4 +25,22 @@ public static class Images {
   public static PImage damageIcon;
   public static PImage healthIcon;
   public static PImage fireSpeedIcon;
+  public static PImage rangeIcon;
+  public static PImage deleteIcon;
+  
+  public static PImage minionSpeed;
+  public static PImage minionSpawn;
+  
+  public static PImage bigCoin;
+  public static PImage smallCoin;
+  
+  public static PImage towerAttack;
+  
+  public static PImage playButton;
+  public static PImage singleButton;
+  public static PImage multiButton;
+  public static PImage creditsButton;
+  public static PImage instructionsButton;
+  public static PImage easyButton;
+  public static PImage hardButton;
 }

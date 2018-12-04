@@ -8,7 +8,7 @@ public abstract class Tile {
   public PVector pos;
   public PImage img;
   
-  public void update(GameSceneMultiplayer scene, boolean player1) {
+  public void update(Player enemy) {
   }
   
   public void display() {

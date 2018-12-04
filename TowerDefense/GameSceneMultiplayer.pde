@@ -211,23 +211,25 @@ public class GameSceneMultiplayer extends Scene {
     rect(0, 0, 1000, 120);
     //player 1 text
     fill(255);
-    text("You: ", 40, 25);
+    text("Player 1: ", 40, 25);
     //enemy text
-    text("Enemy: ", 750, 25);
+    text("Player 2: ", 750, 25);
     //player 1 health bar
-    image(Images.healthbarBackground, 78, 12, healthBarLength + 2, 20);
-    image(Images.healthbar, 79, 13, healthBarLength * player1.healthPercent(), 18);
+    image(Images.healthbarBackground, 98, 12, healthBarLength + 2, 20);
+    image(Images.healthbar, 99, 13, healthBarLength * player1.healthPercent(), 18);
     //enemy health bar
-    image(Images.healthbarBackground, 806, 12, healthBarLength + 2, 20);
-    image(Images.healthbar, 807, 13, healthBarLength * player2.healthPercent(), 18);
+    image(Images.healthbarBackground, 811, 12, healthBarLength + 2, 20);
+    image(Images.healthbar, 812, 13, healthBarLength * player2.healthPercent(), 18);
     //fan icon placeholder
     fill(0, 255, 255);
-    rect(250, 10, 40, 20);
-    rect(610, 10, 40, 20);
+    image(Images.bigCoin, 250, 10);
+    image(Images.bigCoin, 610, 10);
+    //rect(250, 10, 40, 20);
+    //rect(610, 10, 40, 20);
     //fan count
     fill(255);
-    text(player1.fans, 310, 25); // p1
-    text(player2.fans, 670, 25); //p2
+    text(player1.fans, 290, 25); // p1
+    text(player2.fans, 650, 25); //p2
     //dj tower 1
     tint(100, 200, 255);
     image(Images.djStand1, 10, 170, 90, 280);
@@ -328,7 +330,7 @@ public class GameSceneMultiplayer extends Scene {
     for (int i = 0; i < worldRows; ++i)
     {
       for (int j = 0; j < worldCols; ++j) {
-        worldTiles[i][j].update(this, j < 10);
+        worldTiles[i][j].update((j < 10 ? player2 : player1));
       }   
     }
 
@@ -338,7 +340,7 @@ public class GameSceneMultiplayer extends Scene {
 
   private void buildingUpdate() {
     fill(255);
-    text("Building State", 465, 20);
+    text("Building Stage", 465, 20);
 
     float startAngle = HALF_PI * -1;
     colorMode(HSB);
@@ -369,11 +371,14 @@ public class GameSceneMultiplayer extends Scene {
       text("1:", 30, 80);
       float halfHeight = tileHeight / 2;
       tint(100, 200, 255);
-      image(Images.creepNormal1, 60, 75 - halfHeight, tileWidth, tileHeight);
+      image(Images.creepNormal1, 50, 75 - halfHeight, tileWidth, tileHeight);
+      //tint(150, 150, 255);
       noTint();
+      image(Images.minionSpeed, 83, 80);
       text((int)(player1.creepSpeedMultiplyer * 100) + "%", 110, 80);
       textSize(10);
-      text(creepSpeedCost, 120, 105);
+      image(Images.smallCoin, 35, 98);
+      text(creepSpeedCost, 60, 108);
       textSize(12);
       //#2
       text("2:", 170, 80);
@@ -384,16 +389,20 @@ public class GameSceneMultiplayer extends Scene {
       image(Images.healthIcon, 223, 80);
       noTint();
       textSize(10);
-      text(creepHealthCost, 260, 105);
+      image(Images.smallCoin, 175, 98);
+      text(creepHealthCost, 200, 108);
       textSize(12);
       //#3
       text("3:", 310, 80);
       tint(100, 200, 255);
       image(Images.creepNormal1, 330, 75 - halfHeight, tileWidth, tileHeight);
+      //tint(150, 150, 255);
       noTint();
+      image(Images.minionSpawn, 363, 80);
       text((int)(player1.creepSpawnMultiplyer * 100) + "%", 395, 80);
       textSize(10);
-      text(creepSpawnCost, 400, 105);
+      image(Images.smallCoin, 315, 98);
+      text(creepSpawnCost, 340, 108);
       textSize(12);
     } else {
       // display tower upgrade options
@@ -421,9 +430,15 @@ public class GameSceneMultiplayer extends Scene {
       //#1
       text("1:", 570, 80);
       float halfHeight = tileHeight / 2;
-      image(Images.creepNormal2, 590, 75 - halfHeight, tileWidth, tileHeight);
+      image(Images.creepNormal2, 605, 75 - halfHeight, tileWidth, tileHeight);
+      pushMatrix();
+      translate(612, 80);
+      scale(-1, 1);
+      image(Images.minionSpeed, 0, 0);
+      popMatrix();
       text((int)(player2.creepSpeedMultiplyer * 100) + "%", 655, 80);
       textSize(10);
+      image(Images.smallCoin, 635, 95);
       text(creepSpeedCost, 660, 105);
       textSize(12);
       //#2
@@ -434,13 +449,16 @@ public class GameSceneMultiplayer extends Scene {
       noTint();
       text((int)(player2.creepHealthMultiplyer * 100) + "%", 795, 80);
       textSize(10);
+      image(Images.smallCoin, 785, 95);
       text(creepHealthCost, 810, 105);
       textSize(12);
       //#3
       text("3:", 850, 80);
       image(Images.creepNormal2, 885, 75 - halfHeight, tileWidth, tileHeight);
+      image(Images.minionSpawn, 875, 80);
       text((int)(player2.creepSpawnMultiplyer * 100) + "%", 945, 80);
       textSize(10);
+      image(Images.smallCoin, 935, 95);
       text(creepHealthCost, 960, 105);
       textSize(12);
     } else {
@@ -472,6 +490,7 @@ public class GameSceneMultiplayer extends Scene {
       text(tileObj.getDamage(0), sX + 60, 72);
       image(Images.fireSpeedIcon, sX + 38, 82);
       text(fireSpeedConvert(tileObj.getFireSpeed(0)), sX + 60, 92);
+      image(Images.rangeIcon, sX + 40, 103);
       text(tileObj.getRange(0), sX + 60, 112);
       // radius around tower
       tileObj.displayRadius();
@@ -493,6 +512,7 @@ public class GameSceneMultiplayer extends Scene {
         image(Images.healthIcon, sX + 238, 58);
         text(tileObj.upgrades[tileObj.upgradeIndex + 1].health + " (+" + (tileObj.upgrades[tileObj.upgradeIndex + 1].health - tileObj.health) + ")", sX + 260, 70);
         //image(Images.healthIcon, 268, 88);
+        image(Images.smallCoin, sX + 235, 90);
         text(tileObj.getUpgradeFanCost(1), sX + 260, 100);
         text("2.", sX + 370, 50);
       } else {
@@ -503,7 +523,9 @@ public class GameSceneMultiplayer extends Scene {
         text(tileObj.getDamage(1) + " (+" + (tileObj.getDamage(1) - tileObj.getDamage(0)) + ")", sX + 245, 82);
         image(Images.fireSpeedIcon, sX + 225, 97);
         text(fireSpeedConvert(tileObj.getFireSpeed(1)) + " (+" + (fireSpeedConvert(tileObj.getFireSpeed(1)) - fireSpeedConvert(tileObj.getFireSpeed(0))) + ")", sX + 245, 107);
+        image(Images.rangeIcon, sX + 290, 58);
         text(tileObj.getRange(1) + " (+" + (tileObj.getRange(1) - tileObj.getRange(0)) + ")", sX + 315, 70);
+        image(Images.smallCoin, sX + 290, 85);
         text(tileObj.getUpgradeFanCost(1), sX + 315, 95);
         textSize(12);
         text("2.", sX + 390, 50);

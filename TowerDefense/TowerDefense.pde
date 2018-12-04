@@ -1,18 +1,15 @@
 /* TODO:
 Art:
-  Icons - coins/fans, speed for creep upgrades, spawn time (little clock), range(maybe just a circle with a reticle in it), a red x to delete towers
   UI - a better background for the ui, and around the dj stands
-  Other - projectile art (something like a lightning bolt, possibly different for each tower, would need to be able to be strechted up to 300 pixels and not look grainy).
-Music:
+ Music:
   More mini game songs
 Code:
   Possibly do player select. Would need art assets for each player, would probably need greyscale images to tint for each player
-  Possibly have a game over scene, or just a prettier game over message when the game is over
   Balance the Game
 Rhythm Game:
   Revamp art, fade out volume near the end.
 Main Menu:
-  play button, instructions button, credits page for all the music
+  play button (single and multiplayer, instructions button, credits page for all the music
 */
 
 import ddf.minim.*;
@@ -47,6 +44,7 @@ final int GRID_START_Y = 120;
 
 void setup() {
   size(1000, 500);
+  AI.applet = this;
   initMusic();
   initImages();
   tiles.put(0, new RedTile());
@@ -134,6 +132,23 @@ private void initImages() {
   Images.damageIcon = loadImage("stat_icons_damage.png");
   Images.healthIcon = loadImage("stat_icons_health.png");
   Images.fireSpeedIcon = loadImage("stat_icons_firerate.png");
+  Images.rangeIcon = loadImage("stat_icons_range.png");
+  
+  Images.minionSpeed = loadImage("minion_stats_speed.png");
+  Images.minionSpawn = loadImage("minion_stats_spawn.png");
+  
+  Images.bigCoin = loadImage("coin_big.png");
+  Images.smallCoin = loadImage("coin_small.png");
+  
+  Images.towerAttack = loadImage("tower_attack.png");
+  
+  Images.playButton = loadImage("button_play.png");
+  Images.singleButton = loadImage("button_singleplayer.png");
+  Images.multiButton = loadImage("button_multiplayer.png");
+  Images.creditsButton = loadImage("button_credits.png");
+  Images.instructionsButton = loadImage("button_controls.png"); 
+  //Images.easyButton = loadImage("button_easy.png");
+  //Images.hardButton = loadImage("button_hard.png");
 }
 
 void changeScene(Scene newScene) {

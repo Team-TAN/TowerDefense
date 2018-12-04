@@ -19,16 +19,28 @@ class UI {
     textSize(10);
     
     fill(255);
-    text("1", sX + tileWidth / 2 - 2, sY - 8);
-    text("2",  sX + w + 33 + tileWidth / 2, sY - 8);
-    text("3",  sX + w*2 + 68 + tileWidth / 2, sY - 8);
-    text("4",  sX + w*3 + 103 + tileWidth / 2, sY - 8);
-    text("5",  sX + w*4 + 141 + tileWidth / 2, sY - 8);
+    text("1.", sX + tileWidth / 2 - 22, sY - 8);
+    text("2.",  sX + w + 13 + tileWidth / 2, sY - 8);
+    text("3.",  sX + w*2 + 48 + tileWidth / 2, sY - 8);
+    text("4.",  sX + w*3 + 83 + tileWidth / 2, sY - 8);
+    text("5.",  sX + w*4 + 121 + tileWidth / 2, sY - 8);
     
     if (player.fans >= towers[0].fanCost)
       tint(255, 255);
     else 
       tint(255, 125);
+      
+    //coin costs
+    image(Images.smallCoin, sX + tileWidth / 2 - 5, sY - 20);
+    text(towers[0].fanCost, sX + tileWidth / 2 + 20, sY - 8);
+    image(Images.smallCoin, sX + w + 30 + tileWidth / 2, sY - 20);
+    text(towers[1].fanCost, sX + w + 55 + tileWidth / 2, sY - 8);
+    image(Images.smallCoin, sX + w * 2 + 65 + tileWidth / 2, sY - 20);
+    text(towers[2].fanCost, sX + w * 2 + 90 + tileWidth / 2, sY - 8);
+    image(Images.smallCoin, sX + w * 3 + 100 + tileWidth / 2, sY - 20);
+    text(towers[3].fanCost, sX + w * 3 + 125 + tileWidth / 2, sY - 8);
+    image(Images.smallCoin, sX + w * 4 + 135 + tileWidth / 2, sY - 20);
+    text(towers[4].fanCost, sX + w * 4 + 160 + tileWidth / 2, sY - 8);
       
     image(towers[0].img, sX, sY, tileWidth, tileHeight);
     //tower 1 stats
